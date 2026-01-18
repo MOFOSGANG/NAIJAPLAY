@@ -1,10 +1,11 @@
 
 import { create } from 'zustand';
-import { User, AppView, GameType, GameRoom, ChatMessage, GameStats, DailyQuest } from './types';
+import { User, AppView, GameType, GameRoom, ChatMessage, GameStats, DailyQuest, FriendRequest, PrivateMessage, VillageLeaderboardEntry } from './types';
 import { XP_PER_LEVEL, DAILY_QUESTS, CULTURAL_TITLES } from './constants';
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || "" });
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
 interface GameState {
   user: User;
@@ -12,6 +13,16 @@ interface GameState {
   activeGameId: GameType | null;
   activeRoom: GameRoom | null;
   globalChat: ChatMessage[];
+  social: {
+    friends: User[];
+    requests: FriendRequest[];
+    messages: Record<string, PrivateMessage[]>;
+    activeChatId: string | null;
+  };
+  leaders: {
+    users: User[];
+    villages: VillageLeaderboardEntry[];
+  };
   dailyQuests: DailyQuest[];
   isLoading: boolean;
   aiBanter: { text: string; visible: boolean };
@@ -34,6 +45,19 @@ interface GameState {
   // Fix: Added updateProfile signature
   updateProfile: (updates: Partial<User>) => void;
   completeOnboarding: () => void;
+
+  // Social Actions
+  fetchFriends: () => Promise<void>;
+  fetchRequests: () => Promise<void>;
+  sendFriendRequest: (username: string) => Promise<void>;
+  respondToRequest: (requestId: string, accept: boolean) => Promise<void>;
+  fetchMessages: (friendId: string) => Promise<void>;
+  sendPrivateMessage: (receiverId: string, text: string) => Promise<void>;
+  setActiveChat: (friendId: string | null) => void;
+
+  // Leaderboard Actions
+  fetchLeaderboards: (type: 'USERS' | 'VILLAGES', region?: string) => Promise<void>;
+  claimDailyReward: () => Promise<any>;
 }
 
 const INITIAL_STATS: GameStats = { wins: 0, losses: 0, highScore: 0, played: 0 };
@@ -59,6 +83,7 @@ const MOCK_USER: User = {
   activeTheme: 'classic',
   inventory: ['classic_theme'],
   bio: 'Compounding heritage one game at a time! 🔥',
+  loginStreak: 1,
   hasCompletedOnboarding: false
 };
 
@@ -68,6 +93,8 @@ export const useGameStore = create<GameState>((set, get) => ({
   activeGameId: null,
   activeRoom: null,
   globalChat: [],
+  social: { friends: [], requests: [], messages: {}, activeChatId: null },
+  leaders: { users: [], villages: [] },
   dailyQuests: DAILY_QUESTS,
   isLoading: false,
   aiBanter: { text: "", visible: false },
@@ -106,7 +133,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     dailyQuests: state.dailyQuests.map(q => {
       if (q.id === id && !q.completed) {
         const newProgress = q.progress + amount;
-        const completed = newProgress >= q.total;
+        const completed = newProgress >= q.target;
         if (completed) {
           get().addXP(q.rewardXP);
           get().addCoins(q.rewardCoins);
@@ -179,8 +206,217 @@ export const useGameStore = create<GameState>((set, get) => ({
   },
 
   closeBanter: () => set((state) => ({ aiBanter: { ...state.aiBanter, visible: false } })),
-  updateSettings: (newSettings) => set((state) => ({ settings: { ...state.settings, ...newSettings } })),
+  updateSettings: (newSettings) => set((state) => {
+    const updated = { ...state.settings, ...newSettings };
+    localStorage.setItem('game-settings', JSON.stringify(updated));
+    return { settings: updated };
+  }),
   // Fix: Implemented updateProfile
   updateProfile: (updates) => set((state) => ({ user: { ...state.user, ...updates } })),
-  completeOnboarding: () => set((state) => ({ user: { ...state.user, hasCompletedOnboarding: true } }))
+  completeOnboarding: () => set((state) => ({ user: { ...state.user, hasCompletedOnboarding: true } })),
+
+  fetchQuests: async () => {
+    const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      set({ dailyQuests: DAILY_QUESTS });
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/quests`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        set({ dailyQuests: data });
+      }
+    } catch (e) {
+      console.error("Failed to fetch quests", e);
+    }
+  },
+
+  claimQuest: async (questId) => {
+    const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/quests/${questId}/claim`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (res.ok) {
+        const { quest } = await res.json();
+        set((state) => {
+          const updatedQuests = state.dailyQuests.map(q =>
+            q.id === questId ? { ...q, claimed: true, completed: true } : q
+          );
+          const updatedUser = {
+            ...state.user,
+            xp: state.user.xp + quest.rewardXP,
+            coins: state.user.coins + quest.rewardCoins
+          };
+          return { dailyQuests: updatedQuests, user: updatedUser };
+        });
+      }
+    } catch (e) {
+      console.error("Claim failed", e);
+    }
+  },
+
+  // --- Social Implementation ---
+
+  fetchFriends: async () => {
+    const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/social/friends`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) {
+        const friends = await res.json();
+        set(state => ({ social: { ...state.social, friends } }));
+      }
+    } catch (e) { console.error(e); }
+  },
+
+  fetchRequests: async () => {
+    const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/social/requests`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (res.ok) {
+        const requests = await res.json();
+        set(state => ({ social: { ...state.social, requests } }));
+      }
+    } catch (e) { console.error(e); }
+  },
+
+  sendFriendRequest: async (username) => {
+    const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    const token = localStorage.getItem('auth_token');
+    if (!token) throw new Error("Not logged in");
+
+    const res = await fetch(`${API_URL}/api/social/request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ username })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Failed to send request");
+    }
+  },
+
+  respondToRequest: async (requestId, accept) => {
+    const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+
+    await fetch(`${API_URL}/api/social/request/${requestId}/respond`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ accept })
+    });
+
+    // Refresh data
+    get().fetchRequests();
+    if (accept) get().fetchFriends();
+  },
+
+  fetchMessages: async (friendId) => {
+    const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+
+    const res = await fetch(`${API_URL}/api/social/messages/${friendId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+    if (res.ok) {
+      const msgs = await res.json();
+      set(state => ({
+        social: {
+          ...state.social,
+          messages: { ...state.social.messages, [friendId]: msgs }
+        }
+      }));
+    }
+  },
+
+  sendPrivateMessage: async (receiverId, text) => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+
+    const res = await fetch(`${BACKEND_URL}/api/social/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ receiverId, text })
+    });
+
+    if (res.ok) {
+      const msg = await res.json();
+      set(state => ({
+        social: {
+          ...state.social,
+          messages: {
+            ...state.social.messages,
+            [receiverId]: [...(state.social.messages[receiverId] || []), msg]
+          }
+        }
+      }));
+    }
+  },
+
+  setActiveChat: (friendId: string | null) => set(state => ({ social: { ...state.social, activeChatId: friendId } })),
+
+  fetchLeaderboards: async (type, region) => {
+    const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    const path = type === 'USERS'
+      ? (region ? `users/regional/${region}` : 'users/global')
+      : (region ? `villages/regional/${region}` : 'villages/global');
+
+    try {
+      const res = await fetch(`${API_URL}/api/leaderboards/${path}`);
+      if (res.ok) {
+        const data = await res.json();
+        set(state => ({
+          leaders: {
+            ...state.leaders,
+            [type === 'USERS' ? 'users' : 'villages']: data
+          }
+        }));
+      }
+    } catch (e) {
+      console.error("Failed to fetch leaderboards", e);
+    }
+  },
+
+  claimDailyReward: async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/user/daily-reward`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      if (data.claimed) {
+        set((state) => ({
+          user: {
+            ...state.user,
+            coins: state.user.coins + data.rewardCoins,
+            xp: state.user.xp + data.rewardXP,
+            loginStreak: data.newStreak
+          }
+        }));
+      }
+      return data;
+    } catch (e) {
+      console.error("Reward claim failed", e);
+      return { claimed: false, message: "Street network slow! Try again later. 🏾" };
+    }
+  }
 }));

@@ -1,18 +1,46 @@
 export type GameType = 'NPAT' | 'AFTER' | 'TINKO' | 'CATCHER' | 'GARDEN' | 'SUWE';
 
-export type AppView = 'LANDING' | 'DASHBOARD' | 'GAME_PLAY' | 'PROFILE' | 'SOCIAL' | 'MARKET' | 'LEADERBOARDS' | 'LOBBY' | 'SETTINGS' | 'VILLAGES';
+export type AppView = 'LANDING' | 'DASHBOARD' | 'GAME_PLAY' | 'PROFILE' | 'SOCIAL' | 'MARKET' | 'LEADERBOARDS' | 'LOBBY' | 'SETTINGS' | 'VILLAGES' | 'QUESTS';
+
+export interface FriendRequest {
+  id: string;
+  user: User; // Sender
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+}
+
+export interface PrivateMessage {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  text: string;
+  timestamp: string;
+  read: boolean;
+}
+
+export interface VillageLeaderboardEntry {
+  id: string;
+  name: string;
+  region: string;
+  icon: string;
+  totalXP: number;
+  _count: {
+    members: number;
+  };
+}
 
 export type UserStatus = 'ONLINE' | 'OFFLINE' | 'IN_GAME';
 
 export interface DailyQuest {
   id: string;
   title: string;
-  task: string;
+  description: string;
+  type: string;
+  target: number;
   rewardXP: number;
   rewardCoins: number;
   progress: number;
-  total: number;
   completed: boolean;
+  claimed: boolean;
 }
 
 export interface Village {
@@ -93,5 +121,7 @@ export interface User {
   activeTheme: string;
   inventory: string[];
   bio: string;
+  loginStreak: number;
+  lastLoginAt?: string;
   hasCompletedOnboarding: boolean;
 }

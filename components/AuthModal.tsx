@@ -21,27 +21,37 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
         setError(null);
         setMessage(null);
 
+        const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+
         try {
             if (mode === 'RECOVER') {
                 // Mock API call for recovery request
-                console.log("Requesting recovery for:", formData.email);
-                setTimeout(() => {
+                const res = await fetch(`${API_URL}/api/auth/recover`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: formData.email })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
                     setMessage("If that email exists, check your logs for the PIN!");
-                    setMode('VERIFY');
-                    setLoading(false);
-                }, 1000);
+                    setTimeout(() => setMode('VERIFY'), 1500);
+                } else {
+                    setError(data.error || "Recovery failed.");
+                }
+                setLoading(false);
                 return;
             }
 
             if (mode === 'VERIFY') {
-                // Advance to reset password
+                // Placeholder verification logic
                 setMode('RESET');
                 setLoading(false);
                 return;
             }
 
             if (mode === 'RESET') {
-                // Mock API call for password reset
+                // Placeholder reset logic
                 setTimeout(() => {
                     setMessage("Password updated! Sharp! 🔥");
                     setMode('LOGIN');
@@ -51,31 +61,44 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
             }
 
             if (mode === 'LOGIN') {
-                // TODO: Replace with real fetch('/api/auth/login')
-                setTimeout(() => {
-                    const success = formData.username.length > 2 && formData.password.length > 5;
-                    if (success) {
-                        onSuccess({ username: formData.username, level: 1 });
-                        onClose();
-                    } else {
-                        setError("Oga, check your details! Password must be 6+ chars.");
-                    }
-                    setLoading(false);
-                }, 1000);
+                const res = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: formData.username, password: formData.password })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('auth_token', data.token);
+                    onSuccess(data.user);
+                    onClose();
+                } else {
+                    setError(data.error || "Login fail. Check details.");
+                }
+                setLoading(false);
                 return;
             }
 
             if (mode === 'SIGNUP') {
-                // TODO: Replace with real fetch('/api/auth/register')
-                setTimeout(() => {
-                    onSuccess({ username: formData.username, level: 1 });
-                    onClose();
-                    setLoading(false);
-                }, 1000);
+                const res = await fetch(`${API_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: formData.username, email: `user_${Date.now()}@Example.com` /* TODO: Add Email Field */, password: formData.password })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    setMessage("Welcome! Login now.");
+                    setTimeout(() => setMode('LOGIN'), 1500);
+                } else {
+                    setError(data.error || "Signup fail. Try different name.");
+                }
+                setLoading(false);
                 return;
             }
         } catch (err) {
-            setError("Omo, network don log out. Try again.");
+            console.error(err);
+            setError("Network error. Server dey online?");
             setLoading(false);
         }
     };

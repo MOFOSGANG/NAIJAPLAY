@@ -315,6 +315,7 @@ export type UserWhereInput = {
   village?: Prisma.XOR<Prisma.VillageNullableScalarRelationFilter, Prisma.VillageWhereInput> | null
   inventory?: Prisma.InventoryItemListRelationFilter
   matchHistory?: Prisma.MatchListRelationFilter
+  quests?: Prisma.QuestListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -337,6 +338,7 @@ export type UserOrderByWithRelationInput = {
   village?: Prisma.VillageOrderByWithRelationInput
   inventory?: Prisma.InventoryItemOrderByRelationAggregateInput
   matchHistory?: Prisma.MatchOrderByRelationAggregateInput
+  quests?: Prisma.QuestOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -362,6 +364,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   village?: Prisma.XOR<Prisma.VillageNullableScalarRelationFilter, Prisma.VillageWhereInput> | null
   inventory?: Prisma.InventoryItemListRelationFilter
   matchHistory?: Prisma.MatchListRelationFilter
+  quests?: Prisma.QuestListRelationFilter
 }, "id" | "username" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -429,6 +432,7 @@ export type UserCreateInput = {
   village?: Prisma.VillageCreateNestedOneWithoutMembersInput
   inventory?: Prisma.InventoryItemCreateNestedManyWithoutUserInput
   matchHistory?: Prisma.MatchCreateNestedManyWithoutPlayersInput
+  quests?: Prisma.QuestCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -450,6 +454,7 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   inventory?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutUserInput
   matchHistory?: Prisma.MatchUncheckedCreateNestedManyWithoutPlayersInput
+  quests?: Prisma.QuestUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -471,6 +476,7 @@ export type UserUpdateInput = {
   village?: Prisma.VillageUpdateOneWithoutMembersNestedInput
   inventory?: Prisma.InventoryItemUpdateManyWithoutUserNestedInput
   matchHistory?: Prisma.MatchUpdateManyWithoutPlayersNestedInput
+  quests?: Prisma.QuestUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -492,6 +498,7 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventory?: Prisma.InventoryItemUncheckedUpdateManyWithoutUserNestedInput
   matchHistory?: Prisma.MatchUncheckedUpdateManyWithoutPlayersNestedInput
+  quests?: Prisma.QuestUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -619,6 +626,11 @@ export type UserSumOrderByAggregateInput = {
   coins?: Prisma.SortOrder
 }
 
+export type UserScalarRelationFilter = {
+  is?: Prisma.UserWhereInput
+  isNot?: Prisma.UserWhereInput
+}
+
 export type UserListRelationFilter = {
   every?: Prisma.UserWhereInput
   some?: Prisma.UserWhereInput
@@ -627,11 +639,6 @@ export type UserListRelationFilter = {
 
 export type UserOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type UserScalarRelationFilter = {
-  is?: Prisma.UserWhereInput
-  isNot?: Prisma.UserWhereInput
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -660,6 +667,20 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type UserCreateNestedOneWithoutQuestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutQuestsInput, Prisma.UserUncheckedCreateWithoutQuestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutQuestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutQuestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutQuestsInput, Prisma.UserUncheckedCreateWithoutQuestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutQuestsInput
+  upsert?: Prisma.UserUpsertWithoutQuestsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutQuestsInput, Prisma.UserUpdateWithoutQuestsInput>, Prisma.UserUncheckedUpdateWithoutQuestsInput>
 }
 
 export type UserCreateNestedManyWithoutVillageInput = {
@@ -756,6 +777,106 @@ export type UserUncheckedUpdateManyWithoutMatchHistoryNestedInput = {
   deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
+export type UserCreateWithoutQuestsInput = {
+  id?: string
+  username: string
+  email: string
+  password: string
+  avatar?: string
+  title?: string
+  level?: number
+  xp?: number
+  coins?: number
+  bio?: string | null
+  status?: $Enums.UserStatus
+  recoveryToken?: string | null
+  recoveryExpires?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  village?: Prisma.VillageCreateNestedOneWithoutMembersInput
+  inventory?: Prisma.InventoryItemCreateNestedManyWithoutUserInput
+  matchHistory?: Prisma.MatchCreateNestedManyWithoutPlayersInput
+}
+
+export type UserUncheckedCreateWithoutQuestsInput = {
+  id?: string
+  username: string
+  email: string
+  password: string
+  avatar?: string
+  title?: string
+  level?: number
+  xp?: number
+  coins?: number
+  bio?: string | null
+  villageId?: string | null
+  status?: $Enums.UserStatus
+  recoveryToken?: string | null
+  recoveryExpires?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  inventory?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutUserInput
+  matchHistory?: Prisma.MatchUncheckedCreateNestedManyWithoutPlayersInput
+}
+
+export type UserCreateOrConnectWithoutQuestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutQuestsInput, Prisma.UserUncheckedCreateWithoutQuestsInput>
+}
+
+export type UserUpsertWithoutQuestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutQuestsInput, Prisma.UserUncheckedUpdateWithoutQuestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutQuestsInput, Prisma.UserUncheckedCreateWithoutQuestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutQuestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutQuestsInput, Prisma.UserUncheckedUpdateWithoutQuestsInput>
+}
+
+export type UserUpdateWithoutQuestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  coins?: Prisma.IntFieldUpdateOperationsInput | number
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  recoveryToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recoveryExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  village?: Prisma.VillageUpdateOneWithoutMembersNestedInput
+  inventory?: Prisma.InventoryItemUpdateManyWithoutUserNestedInput
+  matchHistory?: Prisma.MatchUpdateManyWithoutPlayersNestedInput
+}
+
+export type UserUncheckedUpdateWithoutQuestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  xp?: Prisma.IntFieldUpdateOperationsInput | number
+  coins?: Prisma.IntFieldUpdateOperationsInput | number
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  villageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  recoveryToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recoveryExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventory?: Prisma.InventoryItemUncheckedUpdateManyWithoutUserNestedInput
+  matchHistory?: Prisma.MatchUncheckedUpdateManyWithoutPlayersNestedInput
+}
+
 export type UserCreateWithoutVillageInput = {
   id?: string
   username: string
@@ -774,6 +895,7 @@ export type UserCreateWithoutVillageInput = {
   updatedAt?: Date | string
   inventory?: Prisma.InventoryItemCreateNestedManyWithoutUserInput
   matchHistory?: Prisma.MatchCreateNestedManyWithoutPlayersInput
+  quests?: Prisma.QuestCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutVillageInput = {
@@ -794,6 +916,7 @@ export type UserUncheckedCreateWithoutVillageInput = {
   updatedAt?: Date | string
   inventory?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutUserInput
   matchHistory?: Prisma.MatchUncheckedCreateNestedManyWithoutPlayersInput
+  quests?: Prisma.QuestUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutVillageInput = {
@@ -862,6 +985,7 @@ export type UserCreateWithoutInventoryInput = {
   updatedAt?: Date | string
   village?: Prisma.VillageCreateNestedOneWithoutMembersInput
   matchHistory?: Prisma.MatchCreateNestedManyWithoutPlayersInput
+  quests?: Prisma.QuestCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInventoryInput = {
@@ -882,6 +1006,7 @@ export type UserUncheckedCreateWithoutInventoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   matchHistory?: Prisma.MatchUncheckedCreateNestedManyWithoutPlayersInput
+  quests?: Prisma.QuestUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInventoryInput = {
@@ -918,6 +1043,7 @@ export type UserUpdateWithoutInventoryInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   village?: Prisma.VillageUpdateOneWithoutMembersNestedInput
   matchHistory?: Prisma.MatchUpdateManyWithoutPlayersNestedInput
+  quests?: Prisma.QuestUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInventoryInput = {
@@ -938,6 +1064,7 @@ export type UserUncheckedUpdateWithoutInventoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   matchHistory?: Prisma.MatchUncheckedUpdateManyWithoutPlayersNestedInput
+  quests?: Prisma.QuestUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMatchHistoryInput = {
@@ -958,6 +1085,7 @@ export type UserCreateWithoutMatchHistoryInput = {
   updatedAt?: Date | string
   village?: Prisma.VillageCreateNestedOneWithoutMembersInput
   inventory?: Prisma.InventoryItemCreateNestedManyWithoutUserInput
+  quests?: Prisma.QuestCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMatchHistoryInput = {
@@ -978,6 +1106,7 @@ export type UserUncheckedCreateWithoutMatchHistoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   inventory?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutUserInput
+  quests?: Prisma.QuestUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMatchHistoryInput = {
@@ -1037,6 +1166,7 @@ export type UserUpdateWithoutVillageInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventory?: Prisma.InventoryItemUpdateManyWithoutUserNestedInput
   matchHistory?: Prisma.MatchUpdateManyWithoutPlayersNestedInput
+  quests?: Prisma.QuestUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVillageInput = {
@@ -1057,6 +1187,7 @@ export type UserUncheckedUpdateWithoutVillageInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventory?: Prisma.InventoryItemUncheckedUpdateManyWithoutUserNestedInput
   matchHistory?: Prisma.MatchUncheckedUpdateManyWithoutPlayersNestedInput
+  quests?: Prisma.QuestUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutVillageInput = {
@@ -1095,6 +1226,7 @@ export type UserUpdateWithoutMatchHistoryInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   village?: Prisma.VillageUpdateOneWithoutMembersNestedInput
   inventory?: Prisma.InventoryItemUpdateManyWithoutUserNestedInput
+  quests?: Prisma.QuestUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMatchHistoryInput = {
@@ -1115,6 +1247,7 @@ export type UserUncheckedUpdateWithoutMatchHistoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventory?: Prisma.InventoryItemUncheckedUpdateManyWithoutUserNestedInput
+  quests?: Prisma.QuestUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutMatchHistoryInput = {
@@ -1144,11 +1277,13 @@ export type UserUncheckedUpdateManyWithoutMatchHistoryInput = {
 export type UserCountOutputType = {
   inventory: number
   matchHistory: number
+  quests: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   inventory?: boolean | UserCountOutputTypeCountInventoryArgs
   matchHistory?: boolean | UserCountOutputTypeCountMatchHistoryArgs
+  quests?: boolean | UserCountOutputTypeCountQuestsArgs
 }
 
 /**
@@ -1175,6 +1310,13 @@ export type UserCountOutputTypeCountMatchHistoryArgs<ExtArgs extends runtime.Typ
   where?: Prisma.MatchWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountQuestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.QuestWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1196,6 +1338,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   village?: boolean | Prisma.User$villageArgs<ExtArgs>
   inventory?: boolean | Prisma.User$inventoryArgs<ExtArgs>
   matchHistory?: boolean | Prisma.User$matchHistoryArgs<ExtArgs>
+  quests?: boolean | Prisma.User$questsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1263,6 +1406,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   village?: boolean | Prisma.User$villageArgs<ExtArgs>
   inventory?: boolean | Prisma.User$inventoryArgs<ExtArgs>
   matchHistory?: boolean | Prisma.User$matchHistoryArgs<ExtArgs>
+  quests?: boolean | Prisma.User$questsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1278,6 +1422,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     village: Prisma.$VillagePayload<ExtArgs> | null
     inventory: Prisma.$InventoryItemPayload<ExtArgs>[]
     matchHistory: Prisma.$MatchPayload<ExtArgs>[]
+    quests: Prisma.$QuestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1693,6 +1838,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   village<T extends Prisma.User$villageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$villageArgs<ExtArgs>>): Prisma.Prisma__VillageClient<runtime.Types.Result.GetResult<Prisma.$VillagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   inventory<T extends Prisma.User$inventoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$inventoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   matchHistory<T extends Prisma.User$matchHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$matchHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  quests<T extends Prisma.User$questsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$questsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2198,6 +2344,30 @@ export type User$matchHistoryArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.MatchScalarFieldEnum | Prisma.MatchScalarFieldEnum[]
+}
+
+/**
+ * User.quests
+ */
+export type User$questsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Quest
+   */
+  select?: Prisma.QuestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Quest
+   */
+  omit?: Prisma.QuestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.QuestInclude<ExtArgs> | null
+  where?: Prisma.QuestWhereInput
+  orderBy?: Prisma.QuestOrderByWithRelationInput | Prisma.QuestOrderByWithRelationInput[]
+  cursor?: Prisma.QuestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.QuestScalarFieldEnum | Prisma.QuestScalarFieldEnum[]
 }
 
 /**

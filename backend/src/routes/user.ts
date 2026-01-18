@@ -1,7 +1,20 @@
 import { Router } from 'express';
-import { prisma } from '../server';
+import type { Response } from 'express';
+import { prisma } from '../server.js';
+import { authMiddleware } from '../middleware/auth.js';
+import type { AuthenticatedRequest } from '../middleware/auth.js';
+import * as rewardService from '../services/rewardService.js';
 
 const router = Router();
+
+router.post('/daily-reward', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const result = await rewardService.checkDailyReward(req.userId!);
+        res.json(result);
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
 router.get('/profile/:id', async (req, res) => {
     const { id } = req.params;

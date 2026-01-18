@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  Quest: 'Quest',
   Village: 'Village',
   ShopItem: 'ShopItem',
   InventoryItem: 'InventoryItem',
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "village" | "shopItem" | "inventoryItem" | "match"
+    modelProps: "user" | "quest" | "village" | "shopItem" | "inventoryItem" | "match"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -479,6 +480,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    Quest: {
+      payload: Prisma.$QuestPayload<ExtArgs>
+      fields: Prisma.QuestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.QuestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.QuestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload>
+        }
+        findFirst: {
+          args: Prisma.QuestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.QuestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload>
+        }
+        findMany: {
+          args: Prisma.QuestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload>[]
+        }
+        create: {
+          args: Prisma.QuestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload>
+        }
+        createMany: {
+          args: Prisma.QuestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.QuestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload>[]
+        }
+        delete: {
+          args: Prisma.QuestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload>
+        }
+        update: {
+          args: Prisma.QuestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload>
+        }
+        deleteMany: {
+          args: Prisma.QuestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.QuestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.QuestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload>[]
+        }
+        upsert: {
+          args: Prisma.QuestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuestPayload>
+        }
+        aggregate: {
+          args: Prisma.QuestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateQuest>
+        }
+        groupBy: {
+          args: Prisma.QuestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QuestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.QuestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QuestCountAggregateOutputType> | number
         }
       }
     }
@@ -839,6 +914,25 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const QuestScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  type: 'type',
+  rewardXP: 'rewardXP',
+  rewardCoins: 'rewardCoins',
+  target: 'target',
+  progress: 'progress',
+  completed: 'completed',
+  claimed: 'claimed',
+  userId: 'userId',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type QuestScalarFieldEnum = (typeof QuestScalarFieldEnum)[keyof typeof QuestScalarFieldEnum]
+
+
 export const VillageScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -973,6 +1067,13 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -1081,6 +1182,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  quest?: Prisma.QuestOmit
   village?: Prisma.VillageOmit
   shopItem?: Prisma.ShopItemOmit
   inventoryItem?: Prisma.InventoryItemOmit

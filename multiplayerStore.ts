@@ -13,6 +13,7 @@ export interface GameRoom {
     maxPlayers: number;
     status: 'WAITING' | 'IN_PROGRESS' | 'FINISHED';
     isPrivate: boolean;
+    stake: number;
     createdAt: Date;
 }
 
@@ -29,6 +30,7 @@ export interface QueueState {
     position: number;
     estimatedWait: number; // seconds
     gameType: string;
+    stake: number;
     startedAt: Date | null;
 }
 
@@ -51,16 +53,16 @@ interface MultiplayerState {
     currentRoom: GameRoom | null;
 
     // Actions
-    connect: () => void;
+    connect: (userId?: string) => void;
     disconnect: () => void;
 
     // Matchmaking Actions
-    joinQueue: (gameType: GameType) => void;
+    joinQueue: (gameType: string, stake?: number) => void;
     leaveQueue: () => void;
 
     // Lobby Actions
     fetchRooms: () => void;
-    createRoom: (name: string, gameType: GameType, isPrivate: boolean) => void;
+    createRoom: (name: string, gameType: string, isPrivate: boolean, stake?: number) => void;
     joinRoom: (roomId: string) => void;
     leaveRoom: () => void;
 
@@ -87,6 +89,7 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
         position: 0,
         estimatedWait: 0,
         gameType: '',
+        stake: 0,
         startedAt: null,
     },
 
@@ -94,11 +97,15 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
     currentRoom: null,
 
     // Connection Actions
-    connect: () => {
+    connect: (userId) => {
         set({ isConnecting: true, connectionError: null });
 
         try {
-            const socket = connectSocket();
+            const socket = connectSocket(userId);
+
+            if (socket.connected) {
+                set({ isConnected: true, isConnecting: false });
+            }
 
             socket.on('connect', () => {
                 set({ isConnected: true, isConnecting: false, reconnectAttempts: 0 });
@@ -138,6 +145,25 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
                 }));
             });
 
+            socket.on('rejoin_game', (data: { roomId: string; letter: string; timer: number; stake: number }) => {
+                console.log(`🟡 Rejoining previous game: ${data.roomId}`);
+                set({
+                    currentRoom: {
+                        id: data.roomId,
+                        name: 'Rejoined Match',
+                        gameType: 'NPAT',
+                        status: 'IN_PROGRESS',
+                        playerCount: 2,
+                        maxPlayers: 2,
+                        stake: data.stake,
+                        hostName: 'Street King',
+                        hostAvatar: '👤',
+                        isPrivate: false,
+                        createdAt: new Date()
+                    }
+                });
+            });
+
             // Listen for room updates
             socket.on('rooms_list', (rooms: GameRoom[]) => {
                 set({ availableRooms: rooms });
@@ -161,17 +187,18 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
     },
 
     // Matchmaking Actions
-    joinQueue: (gameType: string) => {
+    joinQueue: (gameType, stake = 0) => {
         const socket = getSocket();
         if (!socket) return;
 
-        socket.emit('join_queue', { gameType });
+        socket.emit('join_queue', { gameType, stake });
         set({
             queue: {
                 isInQueue: true,
                 position: 0,
                 estimatedWait: 30,
                 gameType,
+                stake,
                 startedAt: new Date(),
             }
         });
@@ -188,6 +215,7 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
                 position: 0,
                 estimatedWait: 0,
                 gameType: '',
+                stake: 0,
                 startedAt: null,
             }
         });
@@ -201,14 +229,14 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
         }
     },
 
-    createRoom: (name: string, gameType: string, isPrivate: boolean) => {
+    createRoom: (name, gameType, isPrivate, stake = 0) => {
         const socket = getSocket();
         if (socket) {
-            socket.emit('create_room', { name, gameType, isPrivate });
+            socket.emit('create_room', { name, gameType, isPrivate, stake });
         }
     },
 
-    joinRoom: (roomId: string) => {
+    joinRoom: (roomId) => {
         const socket = getSocket();
         if (socket) {
             socket.emit('join_room', roomId);

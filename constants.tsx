@@ -49,9 +49,9 @@ export const CULTURAL_TITLES = [
 ];
 
 export const DAILY_QUESTS: DailyQuest[] = [
-  { id: 'q1', title: 'Street Cred', task: 'Send 5 chat messages', rewardXP: 100, rewardCoins: 50, progress: 0, total: 5, completed: false },
-  { id: 'q2', title: 'Sharp Brain', task: 'Score 100 in NPAT', rewardXP: 250, rewardCoins: 150, progress: 0, total: 100, completed: false },
-  { id: 'q3', title: 'Market Day', task: 'Buy any item', rewardXP: 100, rewardCoins: 50, progress: 0, total: 1, completed: false }
+  { id: 'q1', title: 'Street Cred', description: 'Send 5 chat messages', type: 'DAILY', target: 5, rewardXP: 200, rewardCoins: 100, progress: 0, completed: false, claimed: false },
+  { id: 'q2', title: 'Sharp Brain', description: 'Score 100 in NPAT', type: 'DAILY', target: 100, rewardXP: 500, rewardCoins: 300, progress: 0, completed: false, claimed: false },
+  { id: 'q3', title: 'Market Day', description: 'Buy any item', type: 'DAILY', target: 1, rewardXP: 200, rewardCoins: 100, progress: 0, completed: false, claimed: false }
 ];
 
 export const RADIO_PLAYLIST = [

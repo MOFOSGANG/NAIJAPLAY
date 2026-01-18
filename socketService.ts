@@ -4,11 +4,12 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
 let socket: Socket | null = null;
 
-export const connectSocket = (): Socket => {
+export const connectSocket = (userId?: string): Socket => {
     if (!socket) {
         socket = io(BACKEND_URL, {
             transports: ['websocket', 'polling'],
             autoConnect: true,
+            auth: { userId }
         });
 
         socket.on('connect', () => {

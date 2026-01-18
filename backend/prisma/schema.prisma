@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/client"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -28,8 +30,61 @@ model User {
   status        UserStatus @default(OFFLINE)
   recoveryToken String?
   recoveryExpires DateTime?
+  lastLoginAt   DateTime  @default(now())
+  loginStreak   Int       @default(1)
+  achievements  Json      @default("{}")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  
+  quests        Quest[]
+
+  // Social
+  sentMessages     DirectMessage[] @relation("SentMessages")
+  receivedMessages DirectMessage[] @relation("ReceivedMessages")
+  
+  friends       Friendship[] @relation("UserFriends")
+  friendOf      Friendship[] @relation("FriendUsers")
+}
+
+model Friendship {
+  id        String   @id @default(uuid())
+  user      User     @relation("UserFriends", fields: [userId], references: [id])
+  userId    String
+  friend    User     @relation("FriendUsers", fields: [friendId], references: [id])
+  friendId  String
+  status    String   @default("PENDING") // PENDING, ACCEPTED
+  createdAt DateTime @default(now())
+  @@unique([userId, friendId])
+}
+
+model DirectMessage {
+  id        String   @id @default(uuid())
+  text      String
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
+  senderId  String
+  receiver  User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Quest {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  type        String   // DAILY, WEEKLY
+  rewardXP    Int
+  rewardCoins Int
+  target      Int      // Requirement count (e.g. 5)
+  progress    Int      @default(0)
+  completed   Boolean  @default(false)
+  claimed     Boolean  @default(false)
+
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
 }
 
 enum UserStatus {
@@ -75,6 +130,8 @@ model Match {
   gameType   String   // NPAT, AFTER, etc.
   players    User[]   @relation("UserMatches")
   winnerId   String?
+  stake      Int      @default(0)
+  isRanked   Boolean  @default(false)
   score      Int      @default(0)
   duration   Int      // in seconds
   createdAt  DateTime @default(now())

@@ -45,6 +45,11 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model Quest
+ * 
+ */
+export type Quest = Prisma.QuestModel
+/**
  * Model Village
  * 
  */

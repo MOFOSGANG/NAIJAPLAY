@@ -26,7 +26,7 @@ const io = new Server(server, {
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+export const prisma = new PrismaClient({ adapter });
 const redisClient = createClient({ url: process.env.REDIS_URL });
 
 app.use(helmet());
@@ -54,11 +54,20 @@ console.log("Setting up the Compound... 🏗️");
 // TODO: JWT Auth Middleware
 
 // --- SOCKET LOGIC ---
+io.use((socket, next) => {
+    const userId = socket.handshake.auth?.userId;
+    if (userId) {
+        (socket as any).userId = userId;
+    }
+    next();
+});
+
 setupGameEngine(io);
 setupMatchmaking(io);
 
 io.on('connection', (socket) => {
-    console.log("New player don enter street! 🏃 ID:", socket.id);
+    const userId = (socket as any).userId;
+    console.log(`New player don enter street! 🏃 ID: ${socket.id}, User: ${userId || 'Guest'}`);
 
     socket.on('join_room', (roomId) => {
         socket.join(roomId);
@@ -91,12 +100,18 @@ import marketRoutes from './routes/market.js';
 import villageRoutes from './routes/villages.js';
 import userRoutes from './routes/user.js';
 import recoveryRoutes from './routes/recovery.js';
+import questRoutes from './routes/quests.js';
+import socialRoutes from './routes/social.js';
+import leaderboardRoutes from './routes/leaderboard.js';
 
 app.use('/api/auth', authRoutes);
-app.use('/api/auth', recoveryRoutes); // Register recovery under auth namespace
+app.use('/api/auth', recoveryRoutes);
 app.use('/api/market', marketRoutes);
 app.use('/api/villages', villageRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/quests', questRoutes);
+app.use('/api/social', socialRoutes);
+app.use('/api/leaderboards', leaderboardRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: "Steady vibing! 🇳🇬", time: new Date() });

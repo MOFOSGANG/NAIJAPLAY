@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  Quest: 'Quest',
   Village: 'Village',
   ShopItem: 'ShopItem',
   InventoryItem: 'InventoryItem',
@@ -94,6 +95,25 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const QuestScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  type: 'type',
+  rewardXP: 'rewardXP',
+  rewardCoins: 'rewardCoins',
+  target: 'target',
+  progress: 'progress',
+  completed: 'completed',
+  claimed: 'claimed',
+  userId: 'userId',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type QuestScalarFieldEnum = (typeof QuestScalarFieldEnum)[keyof typeof QuestScalarFieldEnum]
 
 
 export const VillageScalarFieldEnum = {

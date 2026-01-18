@@ -5,7 +5,7 @@ import {
   Settings as SettingsIcon, MessageCircle, Play, Users, ArrowLeft,
   Zap, Star, Shield, Music, Check, X, Send, Crown, Eye,
   Edit2, Construction, Sparkles, Volume2, Smartphone, Languages,
-  Home, MapPin, SkipForward, PlayCircle, PauseCircle, Laugh
+  Home, MapPin, SkipForward, PlayCircle, PauseCircle, Laugh, Target
 } from 'lucide-react';
 
 import { useGameStore } from './store';
@@ -27,6 +27,9 @@ import OnlinePlayersList from './components/OnlinePlayersList';
 import ErrorBoundary from './components/ErrorBoundary';
 import AuthModal from './components/AuthModal';
 import RegionalWars from './components/RegionalWars';
+import QuestBoard from './components/QuestBoard';
+import SocialHub from './components/SocialHub';
+import DailyRewardModal from './components/DailyRewardModal';
 
 // --- THEME DEFINITIONS ---
 const THEMES = {
@@ -67,11 +70,35 @@ const AIBanter = () => {
 const Background = () => {
   const activeThemeId = useGameStore((s) => s.user.activeTheme) as keyof typeof THEMES;
   const theme = THEMES[activeThemeId] || THEMES.classic;
+
+  const hour = new Date().getHours();
+  const isNight = hour >= 20 || hour < 6;
+
   return (
     <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden" style={{ backgroundColor: theme.bg }}>
       <div className="ankara-pattern" style={{ opacity: 0.05 }} />
+
+      {/* Dynamic Time Overlays */}
+      <AnimatePresence>
+        {isNight && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 bg-[#050510]/60 z-[1]"
+          />
+        )}
+      </AnimatePresence>
+
       <motion.div animate={{ x: [0, 50, 0], y: [0, 100, 0] }} transition={{ duration: 20, repeat: Infinity }} className="floating-orb w-[600px] h-[600px] top-[-200px] left-[-200px]" style={{ backgroundColor: `${theme.primary}20` }} />
       <motion.div animate={{ x: [0, -80, 0], y: [0, -50, 0] }} transition={{ duration: 25, repeat: Infinity }} className="floating-orb w-[500px] h-[500px] bottom-[-100px] right-[-100px]" style={{ backgroundColor: `${theme.accent}10` }} />
+
+      {/* Street Lights Effect for Night */}
+      {isNight && (
+        <div className="absolute inset-0 z-[2]">
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-yellow-400 blur-xl rounded-full animate-pulse" />
+          <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-[#00ff88]/30 blur-2xl rounded-full animate-pulse" />
+        </div>
+      )}
     </div>
   );
 };
@@ -269,9 +296,9 @@ const Dashboard = ({ onShowLobbies }: { onShowLobbies?: () => void }) => {
                     <p className="text-xs font-black uppercase">{q.title}</p>
                     {q.completed ? <Check size={14} className="text-[#00ff88]" /> : <span className="text-[9px] font-black text-[#FFA500]">+{q.rewardCoins}C</span>}
                   </div>
-                  <p className="text-[10px] text-white/40 mb-3">{q.task}</p>
+                  <p className="text-[10px] text-white/40 mb-3">{q.description}</p>
                   <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-[#00ff88]" style={{ width: `${(q.progress / q.total) * 100}%` }} />
+                    <div className="h-full bg-[#00ff88]" style={{ width: `${(q.progress / q.target) * 100}%` }} />
                   </div>
                 </div>
               ))}
@@ -283,55 +310,7 @@ const Dashboard = ({ onShowLobbies }: { onShowLobbies?: () => void }) => {
   );
 };
 
-const SocialHub = () => {
-  const { globalChat, sendMessage, translateMessage, user } = useGameStore();
-  const { onlinePlayerCount } = useMultiplayerStore();
-  const [msg, setMsg] = useState('');
 
-  // No sample players for live deployment
-  const samplePlayers: any[] = [];
-
-  return (
-    <div className="p-6 pb-32 max-w-6xl mx-auto h-[calc(100vh-160px)] flex flex-col md:flex-row gap-8">
-      <div className="w-full md:w-80 shrink-0">
-        <OnlinePlayersList
-          players={samplePlayers}
-          onInvite={(id) => console.log('Invite', id)}
-          onMessage={(id) => console.log('Message', id)}
-        />
-      </div>
-
-      <div className="flex-grow glass rounded-[40px] border border-white/10 flex flex-col overflow-hidden">
-        <div className="p-4 border-b border-white/5 flex justify-between items-center bg-white/5">
-          <div className="flex items-center gap-3"><div className="w-3 h-3 bg-[#00ff88] rounded-full animate-pulse" /><h3 className="font-black font-accent">Compound Chat</h3></div>
-          <div className="flex gap-2">
-            {CULTURAL_REACTIONS.map(r => (
-              <button key={r.id} onClick={() => sendMessage(`${r.icon} ${r.label}`)} className="p-2 glass rounded-xl hover:bg-white/10 transition-all text-sm">{r.icon}</button>
-            ))}
-          </div>
-        </div>
-        <div className="flex-grow overflow-y-auto p-6 space-y-6">
-          {globalChat.map(m => (
-            <div key={m.id} className={`flex flex-col ${m.senderId === user.id ? 'items-end' : 'items-start'}`}>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[9px] font-black uppercase text-white/20 tracking-widest">{m.senderTitle} • {m.senderName}</span>
-              </div>
-              <div className={`group relative px-5 py-3 rounded-2xl max-w-[80%] text-sm ${m.senderId === user.id ? 'bg-[#008751] text-white rounded-tr-none' : 'bg-white/5 border border-white/10 rounded-tl-none'}`}>
-                {m.translatedText ? <p className="italic text-[#00ff88] mb-1 text-[10px] uppercase font-black">AI Translated:</p> : null}
-                {m.translatedText || m.text}
-                <button onClick={() => translateMessage(m.id)} className="absolute -right-12 top-0 p-2 glass rounded-full opacity-0 group-hover:opacity-100 transition-opacity"><Languages size={14} /></button>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="p-4 bg-white/5 border-t border-white/5 flex gap-2">
-          <input type="text" className="flex-grow bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#00ff88] transition-all" value={msg} placeholder="Say something sharp..." onChange={e => setMsg(e.target.value)} onKeyDown={e => e.key === 'Enter' && msg.trim() && (sendMessage(msg), setMsg(''))} />
-          <button onClick={() => msg.trim() && (sendMessage(msg), setMsg(''))} className="bg-[#008751] p-3 rounded-xl hover:scale-105 transition-all"><Send size={20} /></button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const LandingPage = () => {
   const { setView, setLoading } = useGameStore();
@@ -564,6 +543,34 @@ const ProfilePage = () => {
         <CertificateGenerator />
       </div>
 
+      {/* Achievements Section */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-black font-accent px-2 flex items-center gap-2">
+          <Trophy className="text-[#FFA500]" size={20} /> BADGES OF THE STREET
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {user.achievements.map((achievement: any) => (
+            <div key={achievement.id} className="glass p-6 rounded-[35px] border border-white/10 flex flex-col items-center gap-3 relative group">
+              <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                {achievement.icon || '🏅'}
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] font-black text-[#00ff88] uppercase tracking-widest">{achievement.title}</p>
+                <p className="text-[8px] font-bold text-white/40 mt-1 uppercase">{achievement.description}</p>
+              </div>
+              <div className="absolute top-2 right-2">
+                <Check size={12} className="text-[#00ff88]" />
+              </div>
+            </div>
+          ))}
+          {user.achievements.length === 0 && (
+            <div className="col-span-full py-12 text-center text-white/20 font-black uppercase tracking-[0.2em]">
+              No badges yet. Keep hustling! 🏾🔥
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass p-6 rounded-[30px] border border-white/10 text-center">
@@ -695,7 +702,7 @@ const GamePlay = () => {
 
       // Auto-start if it's a matched room
       if (currentRoom.status === 'WAITING') {
-        socket.emit('start_game', currentRoom.id);
+        socket.emit('start_game', { roomId: currentRoom.id, stake: currentRoom.stake });
       }
     }
   }, [currentRoom]);
@@ -1001,6 +1008,7 @@ const BottomNav = () => {
 
   const navItems = [
     { id: 'DASHBOARD' as AppView, icon: <LayoutDashboard size={20} />, label: 'Compound' },
+    { id: 'QUESTS' as AppView, icon: <Target size={20} />, label: 'Hustle' },
     { id: 'SOCIAL' as AppView, icon: <MessageCircle size={20} />, label: 'Hub' },
     { id: 'MARKET' as AppView, icon: <ShoppingBag size={20} />, label: 'Market' },
     { id: 'VILLAGES' as AppView, icon: <Home size={20} />, label: 'Villages' },
@@ -1025,19 +1033,23 @@ const BottomNav = () => {
 };
 
 const AppContent = () => {
-  const { currentView, isLoading, setView, user, updateProfile, completeOnboarding } = useGameStore();
+  const {
+    currentView, isLoading, setView, user, updateProfile,
+    completeOnboarding, settings, updateSettings
+  } = useGameStore();
   const { connect, isConnected, queue, leaveQueue, currentRoom, leaveRoom, joinRoom } = useMultiplayerStore();
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [spectatingRoomId, setSpectatingRoomId] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const { settings } = useGameStore();
+  const { addToast } = useToasts();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    connect();
-  }, []);
+    if (user && user.id) {
+      connect(user.id);
+    }
+  }, [user.id]);
 
   // Update Source when track changes
   useEffect(() => {
@@ -1063,22 +1075,55 @@ const AppContent = () => {
     }
   }, [settings.music]);
 
-  // Sync view with currentRoom (Auto-transition to game)
   useEffect(() => {
-    if (currentRoom && currentView !== 'GAME_PLAY') {
-      setView('GAME_PLAY', currentRoom.gameType as GameType);
+    const socket = connectSocket(user.id);
+    socket.on('achievements_unlocked', (newUnlocks: any[]) => {
+      newUnlocks.forEach(ach => {
+        addToast(`${ach.title} Unlocked! 🏆`, 'success');
+        // Play sound
+        import('./soundService.js').then(s => s.playSound('QUEST'));
+      });
+    });
+    return () => {
+      socket.off('achievements_unlocked');
+    };
+  }, [user?.id, addToast]);
+
+  const [dailyRewardData, setDailyRewardData] = useState<any>(null);
+
+  useEffect(() => {
+    if (user && user.id && currentView === 'DASHBOARD') {
+      const { claimDailyReward } = useGameStore.getState();
+      claimDailyReward().then(data => {
+        if (data && data.claimed) {
+          setDailyRewardData(data);
+        }
+      });
     }
-  }, [currentRoom, currentView, setView]);
+  }, [user?.id, currentView]);
 
   return (
     <div className="min-h-screen relative">
-      <audio ref={audioRef} loop crossOrigin="anonymous" />
+      <audio
+        ref={audioRef}
+        crossOrigin="anonymous"
+        onEnded={() => updateSettings({ radioTrack: (settings.radioTrack + 1) % RADIO_PLAYLIST.length })}
+      />
       <Background />
       <Header />
       <AICompanion />
       <ConnectionStatus />
 
       <AnimatePresence>{isLoading && <StreetLoader />}</AnimatePresence>
+      <AnimatePresence>
+        {dailyRewardData && (
+          <DailyRewardModal
+            data={dailyRewardData}
+            onClose={() => setDailyRewardData(null)}
+          />
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {!user.hasCompletedOnboarding && currentView === 'DASHBOARD' && !isLoading && (
           <StreetGuide onClose={() => completeOnboarding()} />
@@ -1145,7 +1190,13 @@ const AppContent = () => {
             {currentView === 'DASHBOARD' && <Dashboard onShowLobbies={() => setView('VILLAGES')} />}
             {currentView === 'PROFILE' && <ProfilePage />}
             {currentView === 'MARKET' && <MarketPage />}
+            {currentView === 'MARKET' && <MarketPage />}
             {currentView === 'SOCIAL' && <SocialHub />}
+            {currentView === 'QUESTS' && (
+              <div className="p-6 pb-32 max-w-2xl mx-auto space-y-6">
+                <QuestBoard />
+              </div>
+            )}
             {/* We'll repurpose Villages view for now to show Lobbies or combine them */}
             {currentView === 'VILLAGES' && (
               <div className="p-6 pb-32 max-w-5xl mx-auto space-y-10">
@@ -1161,8 +1212,8 @@ const AppContent = () => {
                       onSpectate={(id) => setSpectatingRoomId(id)}
                     />
 
-                    {/* Regional Wars Shell (Disabled for now) */}
-                    <RegionalWars />
+                    {/* Regional Wars (Disabled for future update) */}
+                    {/* <RegionalWars /> */}
                   </div>
                   <div className="space-y-10 lg:sticky lg:top-24">
                     <OnlinePlayersList players={[]} />
