@@ -2,10 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wifi, WifiOff, Loader2, RefreshCw } from 'lucide-react';
 import { useMultiplayerStore } from '../multiplayerStore';
+import { useGameStore } from '../store';
 
 const ConnectionStatus = () => {
+    const { user } = useGameStore();
     const { isConnected, isConnecting, connectionError, reconnectAttempts, connect } = useMultiplayerStore();
     const [showBanner, setShowBanner] = useState(false);
+
+    if (!user) return null;
 
     useEffect(() => {
         // Show banner if disconnected for more than 2 seconds
@@ -25,10 +29,10 @@ const ConnectionStatus = () => {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 className={`flex items-center gap-2 px-3 py-2 glass rounded-full border ${isConnected
-                        ? 'border-[#00ff88]/30 text-[#00ff88]'
-                        : isConnecting
-                            ? 'border-yellow-500/30 text-yellow-500'
-                            : 'border-red-500/30 text-red-500'
+                    ? 'border-[#00ff88]/30 text-[#00ff88]'
+                    : isConnecting
+                        ? 'border-yellow-500/30 text-yellow-500'
+                        : 'border-red-500/30 text-red-500'
                     }`}
             >
                 {isConnected ? (
