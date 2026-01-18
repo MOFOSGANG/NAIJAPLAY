@@ -19,6 +19,17 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+// --- CRASH LOGGING ---
+process.on('uncaughtException', (err) => {
+    console.error('💥 FATAL ERROR (Uncaught):', err);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('💥 UNHANDLED REJECTION:', reason);
+});
+
 validateEnv();
 
 const app = express();
@@ -131,7 +142,7 @@ const __dirname = path.dirname(__filename);
 if (process.env.NODE_ENV === 'production') {
     const frontendPath = path.resolve(__dirname, '../../dist');
     app.use(express.static(frontendPath));
-    app.get('(.*)', (req, res) => {
+    app.get('/:splat*', (req, res) => {
         if (!req.path.startsWith('/api')) {
             res.sendFile(path.join(frontendPath, 'index.html'));
         }
