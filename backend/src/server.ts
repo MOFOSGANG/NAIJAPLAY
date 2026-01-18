@@ -3,7 +3,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { PrismaClient } from './generated/client/client.js';
+import { PrismaClient } from '@prisma/client';
 import { createClient } from 'redis';
 import pg from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
