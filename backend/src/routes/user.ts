@@ -9,7 +9,8 @@ const router = Router();
 
 router.post('/daily-reward', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
     try {
-        const result = await rewardService.checkDailyReward(req.userId!);
+        if (!req.userId) return res.status(401).json({ error: "Unauthorized" });
+        const result = await rewardService.checkDailyReward(req.userId);
         res.json(result);
     } catch (error: any) {
         res.status(400).json({ error: error.message });

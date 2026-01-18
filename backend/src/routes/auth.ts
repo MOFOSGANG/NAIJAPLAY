@@ -88,6 +88,9 @@ router.post('/login', async (req, res) => {
 // Token verification / Current user
 router.get('/me', authMiddleware, async (req: AuthenticatedRequest, res) => {
     try {
+        if (!req.userId) {
+            return res.status(401).json({ error: "Unauthorized access! 🚫" });
+        }
         const user = await prisma.user.findUnique({
             where: { id: req.userId },
             include: { inventory: true }
