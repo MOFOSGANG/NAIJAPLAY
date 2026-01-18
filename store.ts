@@ -98,7 +98,12 @@ export const useGameStore = create<GameState>((set, get) => ({
   dailyQuests: DAILY_QUESTS,
   isLoading: false,
   aiBanter: { text: "", visible: false },
-  settings: { music: true, sfx: true, haptics: true, radioTrack: 0 },
+  settings: {
+    music: true,
+    sfx: true,
+    haptics: true,
+    radioTrack: Math.floor(Math.random() * 7) // Randomized on start
+  },
 
   setView: (view, gameId) => set({ currentView: view, activeGameId: gameId || null }),
   setLoading: (loading) => set({ isLoading: loading }),

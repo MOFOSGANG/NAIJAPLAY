@@ -83,7 +83,11 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                 const res = await fetch(`${API_URL}/api/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: formData.username, email: `user_${Date.now()}@Example.com` /* TODO: Add Email Field */, password: formData.password })
+                    body: JSON.stringify({
+                        username: formData.username,
+                        email: formData.email,
+                        password: formData.password
+                    })
                 });
                 const data = await res.json();
 
@@ -181,9 +185,11 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
                                     </div>
                                 )}
 
-                                {mode === 'RECOVER' && (
+                                {(mode === 'SIGNUP' || mode === 'RECOVER') && (
                                     <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black uppercase text-white/40 ml-2">Recovery Email</label>
+                                        <label className="text-[10px] font-black uppercase text-white/40 ml-2">
+                                            {mode === 'SIGNUP' ? 'Street Email' : 'Recovery Email'}
+                                        </label>
                                         <div className="relative">
                                             <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
                                             <input

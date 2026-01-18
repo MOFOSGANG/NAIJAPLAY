@@ -154,7 +154,7 @@ const AICompanion = () => {
   );
 };
 
-const Header = () => {
+const Header = ({ isLoggedIn, setShowAuthModal }: { isLoggedIn: boolean; setShowAuthModal: (v: boolean) => void }) => {
   const { user, setView } = useGameStore();
   return (
     <header className="sticky top-0 z-50 glass px-6 py-4 flex justify-between items-center">
@@ -253,10 +253,6 @@ const Dashboard = ({ onShowLobbies }: { onShowLobbies?: () => void }) => {
                 <span className="text-[8px] font-black uppercase text-white/40">{isConnected ? 'Online' : 'Offline'}</span>
               </div>
               {/* Villages removed for future update */}
-              {/* <button onClick={() => setView('VILLAGES')} className="glass p-4 rounded-3xl border border-white/5 hover:bg-white/10 transition-all flex flex-col items-center gap-1 min-w-[80px]"> */}
-                <Home size={20} className="text-[#00ff88]" />
-                <span className="text-[9px] font-black uppercase">Village</span>
-              </button>
               <button onClick={() => setView('MARKET')} className="glass p-4 rounded-3xl border border-white/5 hover:bg-white/10 transition-all flex flex-col items-center gap-1 min-w-[80px]">
                 <ShoppingBag size={20} className="text-[#FFA500]" />
                 <span className="text-[9px] font-black uppercase">Market</span>
@@ -311,14 +307,12 @@ const Dashboard = ({ onShowLobbies }: { onShowLobbies?: () => void }) => {
             </div>
           </section>
         </div>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 
-
-
-const LandingPage = () => {
+const LandingPage = ({ isLoggedIn, setShowAuthModal }: { isLoggedIn: boolean; setShowAuthModal: (v: boolean) => void }) => {
   const { setView, setLoading } = useGameStore();
   const handleStart = () => {
     setLoading(true);
@@ -331,9 +325,22 @@ const LandingPage = () => {
         <h1 className="text-7xl md:text-9xl font-black font-accent text-white leading-none tracking-tighter mb-4">NAIJA PLAY</h1>
         <div className="bg-[#FFA500] text-black px-4 py-1 rounded-full font-black text-xs inline-block rotate-[-2deg]">DIGITALIZING HERITAGE 🔥</div>
       </motion.div>
-      <button onClick={handleStart} className="bg-[#008751] text-white py-6 px-16 rounded-[40px] font-black text-3xl shadow-2xl hover:scale-105 transition-all group">
-        START VIBING <Sparkles className="inline-block ml-2 group-hover:animate-spin" />
-      </button>
+      <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+        {isLoggedIn ? (
+          <button onClick={() => setView('DASHBOARD')} className="px-12 py-6 bg-[#008751] rounded-3xl font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-green-900/40">
+            Oya! Enter Compound
+          </button>
+        ) : (
+          <>
+            <button onClick={() => setShowAuthModal(true)} className="px-12 py-6 bg-[#008751] rounded-3xl font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-green-900/40">
+              Join the Street
+            </button>
+            <button onClick={() => setShowAuthModal(true)} className="px-12 py-6 bg-white/5 border border-white/10 rounded-3xl font-black text-xl hover:bg-white/10 transition-all">
+              Sign In
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 };
@@ -1097,6 +1104,12 @@ const AppContent = () => {
 
   const [dailyRewardData, setDailyRewardData] = useState<any>(null);
 
+  const handleInteraction = () => {
+    if (audioRef.current && settings.music && audioRef.current.paused) {
+      audioRef.current.play().catch(e => console.log('Audio Autoplay Blocked:', e));
+    }
+  };
+
   useEffect(() => {
     if (user && user.id && currentView === 'DASHBOARD') {
       const { claimDailyReward } = useGameStore.getState();
@@ -1109,14 +1122,17 @@ const AppContent = () => {
   }, [user?.id, currentView]);
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative" onClick={handleInteraction}>
       <audio
         ref={audioRef}
         crossOrigin="anonymous"
-        onEnded={() => updateSettings({ radioTrack: (settings.radioTrack + 1) % RADIO_PLAYLIST.length })}
+        onEnded={() => {
+          const nextTrack = Math.floor(Math.random() * RADIO_PLAYLIST.length);
+          updateSettings({ radioTrack: nextTrack });
+        }}
       />
       <Background />
-      <Header />
+      <Header isLoggedIn={isLoggedIn} setShowAuthModal={setShowAuthModal} />
       <AICompanion />
       <ConnectionStatus />
 
@@ -1162,37 +1178,7 @@ const AppContent = () => {
       <main className="relative z-10">
         <AnimatePresence mode="wait">
           <motion.div key={currentView} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
-            {currentView === 'LANDING' && (
-              <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="space-y-8">
-                  <h1 className="text-8xl md:text-9xl font-black font-accent text-white tracking-tighter leading-none">
-                    NAIJA<br /><span className="text-[#008751]">PLAY</span>
-                  </h1>
-                  <p className="text-xl md:text-2xl text-white/40 font-bold max-w-xl mx-auto">
-                    The ultimate digital home for professional Nigerian street games. 🇳🇬
-                  </p>
-
-                  <AIBanter />
-
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-                    {isLoggedIn ? (
-                      <button onClick={() => setView('DASHBOARD')} className="px-12 py-6 bg-[#008751] rounded-3xl font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-green-900/40">
-                        Oya! Enter Compound
-                      </button>
-                    ) : (
-                      <>
-                        <button onClick={() => setShowAuthModal(true)} className="px-12 py-6 bg-[#008751] rounded-3xl font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-green-900/40">
-                          Join the Street
-                        </button>
-                        <button onClick={() => setShowAuthModal(true)} className="px-12 py-6 bg-white/5 border border-white/10 rounded-3xl font-black text-xl hover:bg-white/10 transition-all">
-                          Sign In
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </motion.div>
-              </div>
-            )}
+            {currentView === 'LANDING' && <LandingPage isLoggedIn={isLoggedIn} setShowAuthModal={setShowAuthModal} />}
             {currentView === 'DASHBOARD' && <Dashboard onShowLobbies={() => setView('VILLAGES')} />}
             {currentView === 'PROFILE' && <ProfilePage />}
             {currentView === 'MARKET' && <MarketPage />}

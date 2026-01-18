@@ -29,15 +29,25 @@ router.post('/register', async (req, res) => {
         const user = await prisma.user.create({
             data: {
                 username,
-                email,
+                email: email.toLowerCase(),
                 password: hashedPassword,
                 title: "Street Pikin"
             }
         });
 
         res.json({ message: "Welcome to the Street! 🏃", userId: user.id });
-    } catch (error) {
-        res.status(400).json({ error: "Username don take or something burst!" });
+    } catch (error: any) {
+        if (error.code === 'P2002') {
+            const target = error.meta?.target || [];
+            if (target.includes('username')) {
+                return res.status(400).json({ error: "Username don take by another person! 😩" });
+            }
+            if (target.includes('email')) {
+                return res.status(400).json({ error: "Email don register already! 📧" });
+            }
+        }
+        console.error("REGISTER ERROR:", error);
+        res.status(400).json({ error: "Something burst for our end! Try again. 🏾" });
     }
 });
 
