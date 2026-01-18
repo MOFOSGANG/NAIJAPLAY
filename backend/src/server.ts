@@ -29,7 +29,7 @@ const io = new Server(server, {
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
-export const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient({ adapter });
 const redisClient = createClient({ url: process.env.REDIS_URL });
 
 app.use(helmet());

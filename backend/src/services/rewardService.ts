@@ -1,7 +1,8 @@
 import { prisma } from '../server.js';
 
 export const checkDailyReward = async (userId: string) => {
-    const user = await prisma.user.findUnique({
+    const p = prisma as any;
+    const user = await p.user.findUnique({
         where: { id: userId },
         select: { lastLoginAt: true, loginStreak: true, coins: true }
     });
@@ -32,7 +33,7 @@ export const checkDailyReward = async (userId: string) => {
     const rewardCoins = Math.min(newStreak * 100, 500);
     const rewardXP = 50 * newStreak;
 
-    await prisma.user.update({
+    await p.user.update({
         where: { id: userId },
         data: {
             coins: { increment: rewardCoins },

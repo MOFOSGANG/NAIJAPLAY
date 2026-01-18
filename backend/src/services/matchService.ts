@@ -1,23 +1,15 @@
-import { PrismaClient } from '../generated/client/client.js';
-import pg from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+import { prisma } from '../server.js';
 
 export const processMatchStart = async (playerIds: string[], stake: number) => {
+    const p = prisma as any;
     if (stake <= 0) return;
 
     console.log(`Match starting: Deducting ${stake}C from ${playerIds.length} players. 💰`);
 
     // Use transaction to ensure all players can afford and are deducted
-    await prisma.$transaction(
+    await p.$transaction(
         playerIds.map(id =>
-            prisma.user.update({
+            p.user.update({
                 where: { id },
                 data: { coins: { decrement: stake } }
             })
@@ -26,6 +18,7 @@ export const processMatchStart = async (playerIds: string[], stake: number) => {
 };
 
 export const processMatchPayout = async (winnerId: string, loserIds: string[], stake: number) => {
+    const p = prisma as any;
     if (stake <= 0) return 0;
 
     const pot = stake * (1 + loserIds.length);
@@ -34,7 +27,7 @@ export const processMatchPayout = async (winnerId: string, loserIds: string[], s
 
     console.log(`Match ended: Winner ${winnerId} gets ${payout}C (Pot: ${pot}C, Tax: ${tax}C). 🏆`);
 
-    await prisma.user.update({
+    await p.user.update({
         where: { id: winnerId },
         data: {
             coins: { increment: payout },
@@ -53,7 +46,8 @@ export const saveMatchHistory = async (data: {
     score: number;
     duration: number;
 }) => {
-    return await prisma.match.create({
+    const p = prisma as any;
+    return await p.match.create({
         data: {
             gameType: data.gameType,
             winnerId: data.winnerId || null,

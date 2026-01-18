@@ -64,12 +64,14 @@ export const setupMatchmaking = (io: Server) => {
 };
 
 const checkMatches = (io: Server, gameType: string, stake: number) => {
-    const queue = queues[gameType][stake];
+    const queue = queues[gameType]?.[stake];
+    if (!queue) return;
 
     // Simple 1v1 match for now
     while (queue.length >= 2) {
-        const player1 = queue.shift()!;
-        const player2 = queue.shift()!;
+        const player1 = queue.shift();
+        const player2 = queue.shift();
+        if (!player1 || !player2) break;
 
         const roomId = `room_${uuidv4().substring(0, 8)}`;
 
@@ -92,8 +94,10 @@ const checkMatches = (io: Server, gameType: string, stake: number) => {
 
 const isPlayerInAnyQueue = (socketId: string) => {
     for (const gt in queues) {
-        for (const stake in queues[gt]) {
-            if (queues[gt][stake].find(p => p.socketId === socketId)) return true;
+        const subQueues = queues[gt];
+        for (const stake in subQueues) {
+            const q = subQueues[stake as any];
+            if (q && q.find((p: QueuePlayer) => p.socketId === socketId)) return true;
         }
     }
     return false;
@@ -101,8 +105,12 @@ const isPlayerInAnyQueue = (socketId: string) => {
 
 const removePlayerFromAllQueues = (socketId: string) => {
     for (const gt in queues) {
-        for (const stake in queues[gt]) {
-            queues[gt][stake] = queues[gt][stake].filter(p => p.socketId !== socketId);
+        const subQueues = queues[gt];
+        for (const stake in subQueues) {
+            const q = subQueues[stake as any];
+            if (q) {
+                subQueues[stake as any] = q.filter((p: QueuePlayer) => p.socketId !== socketId);
+            }
         }
     }
 };

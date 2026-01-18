@@ -47,7 +47,8 @@ export const ACHIEVEMENTS: Achievement[] = [
 ];
 
 export const updateAchievements = async (userId: string) => {
-    const user = await prisma.user.findUnique({
+    const p = prisma as any;
+    const user = await p.user.findUnique({
         where: { id: userId },
         include: {
             _count: {
@@ -74,7 +75,7 @@ export const updateAchievements = async (userId: string) => {
             };
 
             // Apply rewards
-            await prisma.user.update({
+            await p.user.update({
                 where: { id: userId },
                 data: {
                     coins: { increment: achievement.rewardCoins },
@@ -88,7 +89,7 @@ export const updateAchievements = async (userId: string) => {
     }
 
     if (updated) {
-        await prisma.user.update({
+        await p.user.update({
             where: { id: userId },
             data: { achievements: currentAchievements }
         });
