@@ -551,113 +551,112 @@ const ProfilePage = () => {
           </button>
         </div>
       </div>
-    </div>
 
-      {/* Street Cred Certificate */ }
-  <div className="glass p-8 rounded-[40px] border border-white/10 bg-[#008751]/5">
-    <div className="flex justify-between items-center mb-6">
-      <div>
-        <h3 className="text-xl font-black font-accent">STREET CRED</h3>
-        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mt-1">Official Status Certificate</p>
+      {/* Street Cred Certificate */}
+      <div className="glass p-8 rounded-[40px] border border-white/10 bg-[#008751]/5">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h3 className="text-xl font-black font-accent">STREET CRED</h3>
+            <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mt-1">Official Status Certificate</p>
+          </div>
+          <div className="w-12 h-12 bg-[#00ff88]/20 rounded-2xl flex items-center justify-center text-2xl">📜</div>
+        </div>
+        <CertificateGenerator />
       </div>
-      <div className="w-12 h-12 bg-[#00ff88]/20 rounded-2xl flex items-center justify-center text-2xl">📜</div>
-    </div>
-    <CertificateGenerator />
-  </div>
 
-  {/* Stats Grid */ }
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-    <div className="glass p-6 rounded-[30px] border border-white/10 text-center">
-      <div className="text-3xl font-black text-[#FFA500]">{user.coins.toLocaleString()}</div>
-      <div className="text-[9px] font-black uppercase text-white/40 tracking-widest mt-1">Coins</div>
-    </div>
-    <div className="glass p-6 rounded-[30px] border border-white/10 text-center">
-      <div className="text-3xl font-black text-[#00ff88]">{totalGamesPlayed}</div>
-      <div className="text-[9px] font-black uppercase text-white/40 tracking-widest mt-1">Games Played</div>
-    </div>
-    <div className="glass p-6 rounded-[30px] border border-white/10 text-center">
-      <div className="text-3xl font-black text-yellow-400">{totalWins}</div>
-      <div className="text-[9px] font-black uppercase text-white/40 tracking-widest mt-1">Victories</div>
-    </div>
-    <div className="glass p-6 rounded-[30px] border border-white/10 text-center">
-      <div className="text-3xl font-black text-purple-400">{winRate}%</div>
-      <div className="text-[9px] font-black uppercase text-white/40 tracking-widest mt-1">Win Rate</div>
-    </div>
-  </div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="glass p-6 rounded-[30px] border border-white/10 text-center">
+          <div className="text-3xl font-black text-[#FFA500]">{user.coins.toLocaleString()}</div>
+          <div className="text-[9px] font-black uppercase text-white/40 tracking-widest mt-1">Coins</div>
+        </div>
+        <div className="glass p-6 rounded-[30px] border border-white/10 text-center">
+          <div className="text-3xl font-black text-[#00ff88]">{totalGamesPlayed}</div>
+          <div className="text-[9px] font-black uppercase text-white/40 tracking-widest mt-1">Games Played</div>
+        </div>
+        <div className="glass p-6 rounded-[30px] border border-white/10 text-center">
+          <div className="text-3xl font-black text-yellow-400">{totalWins}</div>
+          <div className="text-[9px] font-black uppercase text-white/40 tracking-widest mt-1">Victories</div>
+        </div>
+        <div className="glass p-6 rounded-[30px] border border-white/10 text-center">
+          <div className="text-3xl font-black text-purple-400">{winRate}%</div>
+          <div className="text-[9px] font-black uppercase text-white/40 tracking-widest mt-1">Win Rate</div>
+        </div>
+      </div>
 
-  {/* Game Stats */ }
-  <div className="glass p-6 rounded-[40px] border border-white/10">
-    <h3 className="text-xl font-black font-accent uppercase mb-6 flex items-center gap-2">
-      <Trophy size={18} className="text-[#FFA500]" /> Game Performance
-    </h3>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {Object.entries(GAMES_CONFIG).map(([id, game]) => {
-        const stats = user.stats[id as GameType];
-        return (
-          <div key={id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-            <div className={`w-12 h-12 ${game.color} rounded-xl flex items-center justify-center text-2xl`}>
-              {game.icon}
-            </div>
-            <div className="flex-grow">
-              <h4 className="font-black text-sm">{game.title}</h4>
-              <p className="text-[10px] text-white/40">
-                {stats.wins}W / {stats.losses}L • High: {stats.highScore}
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-lg font-black text-[#00ff88]">{stats.played}</div>
-              <div className="text-[8px] text-white/40 uppercase">Played</div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  </div>
+      {/* Game Stats */}
+      <div className="glass p-6 rounded-[40px] border border-white/10">
+        <h3 className="text-xl font-black font-accent uppercase mb-6 flex items-center gap-2">
+          <Trophy size={18} className="text-[#FFA500]" /> Game Performance
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {Object.entries(GAMES_CONFIG).map(([id, game]) => {
+            const stats = user.stats[id as GameType];
+            return (
+              <div key={id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                <div className={`w-12 h-12 ${game.color} rounded-xl flex items-center justify-center text-2xl`}>
+                  {game.icon}
+                </div>
+                <div className="flex-grow">
+                  <h4 className="font-black text-sm">{game.title}</h4>
+                  <p className="text-[10px] text-white/40">
+                    {stats.wins}W / {stats.losses}L • High: {stats.highScore}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-black text-[#00ff88]">{stats.played}</div>
+                  <div className="text-[8px] text-white/40 uppercase">Played</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
-  {/* Inventory */ }
-  <div className="glass p-6 rounded-[40px] border border-white/10">
-    <h3 className="text-xl font-black font-accent uppercase mb-6 flex items-center gap-2">
-      <ShoppingBag size={18} className="text-[#FFA500]" /> My Collection ({user.inventory.length} items)
-    </h3>
-    <div className="flex flex-wrap gap-3">
-      {user.inventory.length > 0 ? (
-        SHOP_ITEMS.filter(item => user.inventory.includes(item.id)).map(item => (
-          <div key={item.id} className="glass px-4 py-3 rounded-2xl border border-white/10 flex items-center gap-3">
-            <span className="text-2xl">{item.icon}</span>
-            <div>
-              <p className="text-xs font-black">{item.name}</p>
-              <p className="text-[8px] text-white/40 uppercase">{item.rarity}</p>
-            </div>
-          </div>
-        ))
-      ) : (
-        <p className="text-white/40 text-sm">No items yet. Visit the Market to get drip! 🛒</p>
-      )}
-    </div>
-  </div>
+      {/* Inventory */}
+      <div className="glass p-6 rounded-[40px] border border-white/10">
+        <h3 className="text-xl font-black font-accent uppercase mb-6 flex items-center gap-2">
+          <ShoppingBag size={18} className="text-[#FFA500]" /> My Collection ({user.inventory.length} items)
+        </h3>
+        <div className="flex flex-wrap gap-3">
+          {user.inventory.length > 0 ? (
+            SHOP_ITEMS.filter(item => user.inventory.includes(item.id)).map(item => (
+              <div key={item.id} className="glass px-4 py-3 rounded-2xl border border-white/10 flex items-center gap-3">
+                <span className="text-2xl">{item.icon}</span>
+                <div>
+                  <p className="text-xs font-black">{item.name}</p>
+                  <p className="text-[8px] text-white/40 uppercase">{item.rarity}</p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-white/40 text-sm">No items yet. Visit the Market to get drip! 🛒</p>
+          )}
+        </div>
+      </div>
 
-  {/* Theme Selector */ }
-  <div className="glass p-6 rounded-[40px] border border-white/10">
-    <h3 className="text-xl font-black font-accent uppercase mb-6 flex items-center gap-2">
-      <Sparkles size={18} className="text-[#FFA500]" /> Compound Theme
-    </h3>
-    <div className="flex flex-wrap gap-4">
-      {Object.entries(THEMES).map(([id, t]) => (
-        <button
-          key={id}
-          onClick={() => updateProfile({ activeTheme: id })}
-          className={`px-6 py-4 glass rounded-2xl border transition-all flex items-center gap-3 ${user.activeTheme === id
-            ? 'border-[#00ff88] bg-[#00ff88]/10 scale-105'
-            : 'border-white/10 hover:border-white/20'
-            }`}
-        >
-          <div className="w-6 h-6 rounded-full" style={{ backgroundColor: t.primary }} />
-          <span className="text-xs font-black uppercase" style={{ color: t.accent }}>{t.name}</span>
-          {user.activeTheme === id && <Check size={14} className="text-[#00ff88]" />}
-        </button>
-      ))}
-    </div>
-  </div>
+      {/* Theme Selector */}
+      <div className="glass p-6 rounded-[40px] border border-white/10">
+        <h3 className="text-xl font-black font-accent uppercase mb-6 flex items-center gap-2">
+          <Sparkles size={18} className="text-[#FFA500]" /> Compound Theme
+        </h3>
+        <div className="flex flex-wrap gap-4">
+          {Object.entries(THEMES).map(([id, t]) => (
+            <button
+              key={id}
+              onClick={() => updateProfile({ activeTheme: id })}
+              className={`px-6 py-4 glass rounded-2xl border transition-all flex items-center gap-3 ${user.activeTheme === id
+                ? 'border-[#00ff88] bg-[#00ff88]/10 scale-105'
+                : 'border-white/10 hover:border-white/20'
+                }`}
+            >
+              <div className="w-6 h-6 rounded-full" style={{ backgroundColor: t.primary }} />
+              <span className="text-xs font-black uppercase" style={{ color: t.accent }}>{t.name}</span>
+              {user.activeTheme === id && <Check size={14} className="text-[#00ff88]" />}
+            </button>
+          ))}
+        </div>
+      </div>
     </div >
   );
 };
