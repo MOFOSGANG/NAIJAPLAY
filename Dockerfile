@@ -1,5 +1,5 @@
 # Build Stage for Frontend
-FROM node:18-alpine AS frontend-builder
+FROM node:22-alpine AS frontend-builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -7,8 +7,9 @@ COPY . .
 RUN npm run build
 
 # Build Stage for Backend
-FROM node:18-alpine AS backend-builder
+FROM node:22-alpine AS backend-builder
 WORKDIR /app
+RUN apk add --no-cache openssl
 COPY backend/package*.json ./backend/
 WORKDIR /app/backend
 RUN npm install
@@ -17,8 +18,9 @@ RUN npx prisma generate
 RUN npm run build
 
 # Final Production Stage
-FROM node:18-alpine
+FROM node:22-alpine
 WORKDIR /app
+RUN apk add --no-cache openssl
 
 # Copy built frontend
 COPY --from=frontend-builder /app/dist ./dist
