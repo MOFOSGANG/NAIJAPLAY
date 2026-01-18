@@ -66,11 +66,23 @@ export namespace $Enums {
 
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
 
+
+export const UserRole: {
+  USER: 'USER',
+  ADMIN: 'ADMIN'
+};
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
 }
 
 export type UserStatus = $Enums.UserStatus
 
 export const UserStatus: typeof $Enums.UserStatus
+
+export type UserRole = $Enums.UserRole
+
+export const UserRole: typeof $Enums.UserRole
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1689,6 +1701,7 @@ export namespace Prisma {
     loginStreak: number | null
     createdAt: Date | null
     updatedAt: Date | null
+    role: $Enums.UserRole | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1710,6 +1723,7 @@ export namespace Prisma {
     loginStreak: number | null
     createdAt: Date | null
     updatedAt: Date | null
+    role: $Enums.UserRole | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1732,6 +1746,7 @@ export namespace Prisma {
     achievements: number
     createdAt: number
     updatedAt: number
+    role: number
     _all: number
   }
 
@@ -1769,6 +1784,7 @@ export namespace Prisma {
     loginStreak?: true
     createdAt?: true
     updatedAt?: true
+    role?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -1790,6 +1806,7 @@ export namespace Prisma {
     loginStreak?: true
     createdAt?: true
     updatedAt?: true
+    role?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -1812,6 +1829,7 @@ export namespace Prisma {
     achievements?: true
     createdAt?: true
     updatedAt?: true
+    role?: true
     _all?: true
   }
 
@@ -1921,6 +1939,7 @@ export namespace Prisma {
     achievements: JsonValue
     createdAt: Date
     updatedAt: Date
+    role: $Enums.UserRole
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -1962,6 +1981,7 @@ export namespace Prisma {
     achievements?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    role?: boolean
     village?: boolean | User$villageArgs<ExtArgs>
     inventory?: boolean | User$inventoryArgs<ExtArgs>
     matchHistory?: boolean | User$matchHistoryArgs<ExtArgs>
@@ -1993,6 +2013,7 @@ export namespace Prisma {
     achievements?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    role?: boolean
     village?: boolean | User$villageArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2016,6 +2037,7 @@ export namespace Prisma {
     achievements?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    role?: boolean
   }
 
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2065,6 +2087,7 @@ export namespace Prisma {
       achievements: Prisma.JsonValue
       createdAt: Date
       updatedAt: Date
+      role: $Enums.UserRole
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2485,6 +2508,7 @@ export namespace Prisma {
     readonly achievements: FieldRef<"User", 'Json'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
+    readonly role: FieldRef<"User", 'UserRole'>
   }
     
 
@@ -9923,7 +9947,8 @@ export namespace Prisma {
     loginStreak: 'loginStreak',
     achievements: 'achievements',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    role: 'role'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -10129,6 +10154,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'UserRole'
+   */
+  export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserRole[]'
+   */
+  export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -10175,6 +10214,7 @@ export namespace Prisma {
     achievements?: JsonFilter<"User">
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     village?: XOR<VillageNullableRelationFilter, VillageWhereInput> | null
     inventory?: InventoryItemListRelationFilter
     matchHistory?: MatchListRelationFilter
@@ -10205,6 +10245,7 @@ export namespace Prisma {
     achievements?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    role?: SortOrder
     village?: VillageOrderByWithRelationInput
     inventory?: InventoryItemOrderByRelationAggregateInput
     matchHistory?: MatchOrderByRelationAggregateInput
@@ -10238,6 +10279,7 @@ export namespace Prisma {
     achievements?: JsonFilter<"User">
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     village?: XOR<VillageNullableRelationFilter, VillageWhereInput> | null
     inventory?: InventoryItemListRelationFilter
     matchHistory?: MatchListRelationFilter
@@ -10268,6 +10310,7 @@ export namespace Prisma {
     achievements?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    role?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -10298,6 +10341,7 @@ export namespace Prisma {
     achievements?: JsonWithAggregatesFilter<"User">
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
   }
 
   export type FriendshipWhereInput = {
@@ -10793,6 +10837,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     village?: VillageCreateNestedOneWithoutMembersInput
     inventory?: InventoryItemCreateNestedManyWithoutUserInput
     matchHistory?: MatchCreateNestedManyWithoutPlayersInput
@@ -10823,6 +10868,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     inventory?: InventoryItemUncheckedCreateNestedManyWithoutUserInput
     matchHistory?: MatchUncheckedCreateNestedManyWithoutPlayersInput
     quests?: QuestUncheckedCreateNestedManyWithoutUserInput
@@ -10851,6 +10897,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     village?: VillageUpdateOneWithoutMembersNestedInput
     inventory?: InventoryItemUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUpdateManyWithoutPlayersNestedInput
@@ -10881,6 +10928,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     inventory?: InventoryItemUncheckedUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUncheckedUpdateManyWithoutPlayersNestedInput
     quests?: QuestUncheckedUpdateManyWithoutUserNestedInput
@@ -10910,6 +10958,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
   }
 
   export type UserUpdateManyMutationInput = {
@@ -10931,6 +10980,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -10953,6 +11003,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   }
 
   export type FriendshipCreateInput = {
@@ -11542,6 +11593,13 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type EnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
   export type VillageNullableRelationFilter = {
     is?: VillageWhereInput | null
     isNot?: VillageWhereInput | null
@@ -11622,6 +11680,7 @@ export namespace Prisma {
     achievements?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    role?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -11650,6 +11709,7 @@ export namespace Prisma {
     loginStreak?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    role?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -11671,6 +11731,7 @@ export namespace Prisma {
     loginStreak?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    role?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -11793,6 +11854,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedJsonFilter<$PrismaModel>
     _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
   export type UserRelationFilter = {
@@ -12218,6 +12289,10 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type EnumUserRoleFieldUpdateOperationsInput = {
+    set?: $Enums.UserRole
   }
 
   export type VillageUpdateOneWithoutMembersNestedInput = {
@@ -12716,6 +12791,13 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -12846,6 +12928,16 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -13299,6 +13391,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     village?: VillageCreateNestedOneWithoutMembersInput
     inventory?: InventoryItemCreateNestedManyWithoutUserInput
     matchHistory?: MatchCreateNestedManyWithoutPlayersInput
@@ -13328,6 +13421,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     inventory?: InventoryItemUncheckedCreateNestedManyWithoutUserInput
     matchHistory?: MatchUncheckedCreateNestedManyWithoutPlayersInput
     quests?: QuestUncheckedCreateNestedManyWithoutUserInput
@@ -13360,6 +13454,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     village?: VillageCreateNestedOneWithoutMembersInput
     inventory?: InventoryItemCreateNestedManyWithoutUserInput
     matchHistory?: MatchCreateNestedManyWithoutPlayersInput
@@ -13389,6 +13484,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     inventory?: InventoryItemUncheckedCreateNestedManyWithoutUserInput
     matchHistory?: MatchUncheckedCreateNestedManyWithoutPlayersInput
     quests?: QuestUncheckedCreateNestedManyWithoutUserInput
@@ -13432,6 +13528,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     village?: VillageUpdateOneWithoutMembersNestedInput
     inventory?: InventoryItemUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUpdateManyWithoutPlayersNestedInput
@@ -13461,6 +13558,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     inventory?: InventoryItemUncheckedUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUncheckedUpdateManyWithoutPlayersNestedInput
     quests?: QuestUncheckedUpdateManyWithoutUserNestedInput
@@ -13499,6 +13597,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     village?: VillageUpdateOneWithoutMembersNestedInput
     inventory?: InventoryItemUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUpdateManyWithoutPlayersNestedInput
@@ -13528,6 +13627,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     inventory?: InventoryItemUncheckedUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUncheckedUpdateManyWithoutPlayersNestedInput
     quests?: QuestUncheckedUpdateManyWithoutUserNestedInput
@@ -13555,6 +13655,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     village?: VillageCreateNestedOneWithoutMembersInput
     inventory?: InventoryItemCreateNestedManyWithoutUserInput
     matchHistory?: MatchCreateNestedManyWithoutPlayersInput
@@ -13584,6 +13685,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     inventory?: InventoryItemUncheckedCreateNestedManyWithoutUserInput
     matchHistory?: MatchUncheckedCreateNestedManyWithoutPlayersInput
     quests?: QuestUncheckedCreateNestedManyWithoutUserInput
@@ -13616,6 +13718,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     village?: VillageCreateNestedOneWithoutMembersInput
     inventory?: InventoryItemCreateNestedManyWithoutUserInput
     matchHistory?: MatchCreateNestedManyWithoutPlayersInput
@@ -13645,6 +13748,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     inventory?: InventoryItemUncheckedCreateNestedManyWithoutUserInput
     matchHistory?: MatchUncheckedCreateNestedManyWithoutPlayersInput
     quests?: QuestUncheckedCreateNestedManyWithoutUserInput
@@ -13688,6 +13792,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     village?: VillageUpdateOneWithoutMembersNestedInput
     inventory?: InventoryItemUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUpdateManyWithoutPlayersNestedInput
@@ -13717,6 +13822,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     inventory?: InventoryItemUncheckedUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUncheckedUpdateManyWithoutPlayersNestedInput
     quests?: QuestUncheckedUpdateManyWithoutUserNestedInput
@@ -13755,6 +13861,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     village?: VillageUpdateOneWithoutMembersNestedInput
     inventory?: InventoryItemUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUpdateManyWithoutPlayersNestedInput
@@ -13784,6 +13891,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     inventory?: InventoryItemUncheckedUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUncheckedUpdateManyWithoutPlayersNestedInput
     quests?: QuestUncheckedUpdateManyWithoutUserNestedInput
@@ -13811,6 +13919,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     village?: VillageCreateNestedOneWithoutMembersInput
     inventory?: InventoryItemCreateNestedManyWithoutUserInput
     matchHistory?: MatchCreateNestedManyWithoutPlayersInput
@@ -13840,6 +13949,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     inventory?: InventoryItemUncheckedCreateNestedManyWithoutUserInput
     matchHistory?: MatchUncheckedCreateNestedManyWithoutPlayersInput
     sentMessages?: DirectMessageUncheckedCreateNestedManyWithoutSenderInput
@@ -13883,6 +13993,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     village?: VillageUpdateOneWithoutMembersNestedInput
     inventory?: InventoryItemUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUpdateManyWithoutPlayersNestedInput
@@ -13912,6 +14023,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     inventory?: InventoryItemUncheckedUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUncheckedUpdateManyWithoutPlayersNestedInput
     sentMessages?: DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -13939,6 +14051,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     inventory?: InventoryItemCreateNestedManyWithoutUserInput
     matchHistory?: MatchCreateNestedManyWithoutPlayersInput
     quests?: QuestCreateNestedManyWithoutUserInput
@@ -13967,6 +14080,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     inventory?: InventoryItemUncheckedCreateNestedManyWithoutUserInput
     matchHistory?: MatchUncheckedCreateNestedManyWithoutPlayersInput
     quests?: QuestUncheckedCreateNestedManyWithoutUserInput
@@ -14025,6 +14139,7 @@ export namespace Prisma {
     achievements?: JsonFilter<"User">
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
   }
 
   export type InventoryItemCreateWithoutItemInput = {
@@ -14084,6 +14199,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     village?: VillageCreateNestedOneWithoutMembersInput
     matchHistory?: MatchCreateNestedManyWithoutPlayersInput
     quests?: QuestCreateNestedManyWithoutUserInput
@@ -14113,6 +14229,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     matchHistory?: MatchUncheckedCreateNestedManyWithoutPlayersInput
     quests?: QuestUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: DirectMessageUncheckedCreateNestedManyWithoutSenderInput
@@ -14181,6 +14298,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     village?: VillageUpdateOneWithoutMembersNestedInput
     matchHistory?: MatchUpdateManyWithoutPlayersNestedInput
     quests?: QuestUpdateManyWithoutUserNestedInput
@@ -14210,6 +14328,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     matchHistory?: MatchUncheckedUpdateManyWithoutPlayersNestedInput
     quests?: QuestUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -14268,6 +14387,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     village?: VillageCreateNestedOneWithoutMembersInput
     inventory?: InventoryItemCreateNestedManyWithoutUserInput
     quests?: QuestCreateNestedManyWithoutUserInput
@@ -14297,6 +14417,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
     inventory?: InventoryItemUncheckedCreateNestedManyWithoutUserInput
     quests?: QuestUncheckedCreateNestedManyWithoutUserInput
     sentMessages?: DirectMessageUncheckedCreateNestedManyWithoutSenderInput
@@ -14582,6 +14703,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    role?: $Enums.UserRole
   }
 
   export type UserUpdateWithoutVillageInput = {
@@ -14603,6 +14725,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     inventory?: InventoryItemUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUpdateManyWithoutPlayersNestedInput
     quests?: QuestUpdateManyWithoutUserNestedInput
@@ -14631,6 +14754,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     inventory?: InventoryItemUncheckedUpdateManyWithoutUserNestedInput
     matchHistory?: MatchUncheckedUpdateManyWithoutPlayersNestedInput
     quests?: QuestUncheckedUpdateManyWithoutUserNestedInput
@@ -14659,6 +14783,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   }
 
   export type InventoryItemCreateManyItemInput = {
@@ -14704,6 +14829,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     village?: VillageUpdateOneWithoutMembersNestedInput
     inventory?: InventoryItemUpdateManyWithoutUserNestedInput
     quests?: QuestUpdateManyWithoutUserNestedInput
@@ -14733,6 +14859,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     inventory?: InventoryItemUncheckedUpdateManyWithoutUserNestedInput
     quests?: QuestUncheckedUpdateManyWithoutUserNestedInput
     sentMessages?: DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -14761,6 +14888,7 @@ export namespace Prisma {
     achievements?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   }
 
 

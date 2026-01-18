@@ -141,7 +141,8 @@ exports.Prisma.UserScalarFieldEnum = {
   loginStreak: 'loginStreak',
   achievements: 'achievements',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  role: 'role'
 };
 
 exports.Prisma.FriendshipScalarFieldEnum = {
@@ -242,6 +243,11 @@ exports.UserStatus = exports.$Enums.UserStatus = {
   ONLINE: 'ONLINE',
   OFFLINE: 'OFFLINE',
   IN_GAME: 'IN_GAME'
+};
+
+exports.UserRole = exports.$Enums.UserRole = {
+  USER: 'USER',
+  ADMIN: 'ADMIN'
 };
 
 exports.Prisma.ModelName = {

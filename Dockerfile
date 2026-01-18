@@ -4,19 +4,33 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build # This assumes a production build script exists
+RUN npm run build
 
-# Final Stage
-FROM node:18-alpine
+# Build Stage for Backend
+FROM node:18-alpine AS backend-builder
 WORKDIR /app
-
-# Copy Backend
 COPY backend/package*.json ./backend/
 WORKDIR /app/backend
 RUN npm install
 COPY backend/ .
 RUN npx prisma generate
+RUN npm run build
 
-# Copy Built Frontend to Backend static folder (if serving from backend)
-# Alternatively, serve frontend separately. For simplicity, we'll suggest a standard backend docker.
-# ENTRYPOINT ["npm", "run", "dev"] # For now
+# Final Production Stage
+FROM node:18-alpine
+WORKDIR /app
+
+# Copy built frontend
+COPY --from=frontend-builder /app/dist ./dist
+
+# Copy backend build and dependencies
+COPY --from=backend-builder /app/backend/dist ./backend/dist
+COPY --from=backend-builder /app/backend/node_modules ./backend/node_modules
+COPY --from=backend-builder /app/backend/package*.json ./backend/
+COPY --from=backend-builder /app/backend/src/generated ./backend/src/generated
+
+EXPOSE 5000
+
+ENV NODE_ENV=production
+WORKDIR /app/backend
+CMD ["npm", "run", "start"]

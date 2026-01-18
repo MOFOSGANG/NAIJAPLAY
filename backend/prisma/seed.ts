@@ -5,6 +5,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
+import bcrypt from 'bcryptjs';
 
 async function main() {
     console.log("Seeding the Street... 🌳");
@@ -35,6 +36,22 @@ async function main() {
     for (const item of items) {
         await prisma.shopItem.create({ data: item });
     }
+
+    // Create Admin User
+    const adminPassword = await bcrypt.hash('MOFOSGNG12$', 10);
+    await prisma.user.upsert({
+        where: { email: 'Mofosgang123@gmail.com' },
+        update: {},
+        create: {
+            username: 'MOFOSGANG',
+            email: 'Mofosgang123@gmail.com',
+            password: adminPassword,
+            role: 'ADMIN',
+            title: 'Compound Chief',
+            coins: 10000,
+            level: 10,
+        },
+    });
 
     console.log("Street don set! ✅");
 }

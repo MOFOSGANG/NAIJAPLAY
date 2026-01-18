@@ -12,8 +12,11 @@ import { rateLimit } from 'express-rate-limit';
 import { setupGameEngine } from './sockets/gameEngine';
 import { setupMatchmaking } from './sockets/matchmaking';
 import { translateToPidgin } from './services/aiService';
+import bcrypt from 'bcryptjs';
 
 import { validateEnv } from './utils/envValidator';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 validateEnv();
@@ -117,6 +120,20 @@ app.get('/api/health', (req, res) => {
     res.json({ status: "Steady vibing! 🇳🇬", time: new Date() });
 });
 
+// Serve Static Files in Production
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+if (process.env.NODE_ENV === 'production') {
+    const frontendPath = path.resolve(__dirname, '../../dist');
+    app.use(express.static(frontendPath));
+    app.get('*', (req, res) => {
+        if (!req.path.startsWith('/api')) {
+            res.sendFile(path.join(frontendPath, 'index.html'));
+        }
+    });
+}
+
 // POST /api/auth/register
 // GET /api/user/profile
 // POST /api/market/buy (Atomic transaction)
@@ -146,6 +163,29 @@ const startServer = async () => {
                     console.log(`========================================`);
                 });
         };
+
+        const initAdmin = async () => {
+            const adminEmail = 'Mofosgang123@gmail.com';
+            const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
+            if (!existingAdmin) {
+                console.log("Setting up the Street Boss... 🕴️");
+                const hashedPassword = await bcrypt.hash('MOFOSGNG12$', 10);
+                await prisma.user.create({
+                    data: {
+                        username: 'MOFOSGANG',
+                        email: adminEmail,
+                        password: hashedPassword,
+                        role: 'ADMIN',
+                        title: 'Compound Chief',
+                        coins: 10000,
+                        level: 10
+                    }
+                });
+                console.log("Admin account MOFOSGANG don ready! ✅");
+            }
+        };
+
+        await initAdmin();
 
         listen(PORT);
     } catch (error) {

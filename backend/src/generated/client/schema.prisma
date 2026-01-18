@@ -44,6 +44,12 @@ model User {
 
   friends  Friendship[] @relation("UserFriends")
   friendOf Friendship[] @relation("FriendUsers")
+  role     UserRole     @default(USER)
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }
 
 model Friendship {
