@@ -131,7 +131,7 @@ const __dirname = path.dirname(__filename);
 if (process.env.NODE_ENV === 'production') {
     const frontendPath = path.resolve(__dirname, '../../dist');
     app.use(express.static(frontendPath));
-    app.get('*all', (req, res) => {
+    app.get('(.*)', (req, res) => {
         if (!req.path.startsWith('/api')) {
             res.sendFile(path.join(frontendPath, 'index.html'));
         }
