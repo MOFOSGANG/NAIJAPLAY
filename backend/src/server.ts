@@ -142,10 +142,13 @@ const __dirname = path.dirname(__filename);
 if (process.env.NODE_ENV === 'production') {
     const frontendPath = path.resolve(__dirname, '../../dist');
     app.use(express.static(frontendPath));
-    app.get('/:splat*', (req, res) => {
-        if (!req.path.startsWith('/api')) {
-            res.sendFile(path.join(frontendPath, 'index.html'));
+
+    // Catch-all route for SPA - Safe for Express 5 (No path parser used)
+    app.use((req, res, next) => {
+        if (req.method === 'GET' && !req.path.startsWith('/api')) {
+            return res.sendFile(path.join(frontendPath, 'index.html'));
         }
+        next();
     });
 }
 
