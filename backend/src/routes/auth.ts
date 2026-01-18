@@ -49,14 +49,22 @@ router.post('/login', async (req, res) => {
     const { username, password } = parse.data;
 
     try {
-        const user = await prisma.user.findUnique({ where: { username } });
+        const user = await prisma.user.findUnique({
+            where: { username },
+            include: { inventory: true } // Include some basics
+        });
+
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ error: "Oga, your details no match!" });
         }
 
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'secret');
-        res.json({ token, user: { id: user.id, username: user.username, level: user.level } });
+
+        // Return full user (minus password)
+        const { password: _, ...userData } = user;
+        res.json({ token, user: userData });
     } catch (error) {
+        console.error("LOGIN ERROR:", error);
         res.status(500).json({ error: "Login don hang!" });
     }
 });

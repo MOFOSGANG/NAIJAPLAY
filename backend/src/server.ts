@@ -188,24 +188,33 @@ const startServer = async () => {
 
         const initAdmin = async () => {
             const adminEmail = 'Mofosgang123@gmail.com';
+            const adminUsername = 'MOFOSGANG';
             const p = prisma as any;
-            const existingAdmin = await p.user.findUnique({ where: { email: adminEmail } });
-            if (!existingAdmin) {
-                console.log("Setting up the Street Boss... 🕴️");
-                const hashedPassword = await bcrypt.hash('MOFOSGNG12$', 10);
-                await p.user.create({
-                    data: {
-                        username: 'MOFOSGANG',
-                        email: adminEmail,
-                        password: hashedPassword,
-                        role: 'ADMIN',
-                        title: 'Compound Chief',
-                        coins: 10000,
-                        level: 10
-                    }
-                });
-                console.log("Admin account MOFOSGANG don ready! ✅");
-            }
+
+            console.log("Syncing the Street Boss... 🕴️");
+            const hashedPassword = await bcrypt.hash('MOFOSGANG12$', 10);
+
+            await p.user.upsert({
+                where: { username: adminUsername },
+                update: {
+                    coins: 30000,
+                    level: 30,
+                    title: 'Compound Boss',
+                    role: 'ADMIN',
+                    email: adminEmail // Ensure email is in sync
+                },
+                create: {
+                    username: adminUsername,
+                    email: adminEmail,
+                    password: hashedPassword,
+                    role: 'ADMIN',
+                    title: 'Compound Boss',
+                    coins: 30000,
+                    level: 30,
+                    xp: 0
+                }
+            });
+            console.log("Admin account MOFOSGANG (Level 30 | 30k Coins) is READY! ✅");
         };
 
         await initAdmin();

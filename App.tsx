@@ -167,7 +167,12 @@ const Header = () => {
           <span className="text-[9px] font-black text-[#00ff88] uppercase tracking-widest">{user.title}</span>
           <span className="text-xs font-bold">{user.username}</span>
         </div>
-        <button onClick={() => setView('PROFILE')} className="w-10 h-10 rounded-full bg-[#008751] flex items-center justify-center border-2 border-[#00ff88]">{user.avatar}</button>
+        <button
+          onClick={() => isLoggedIn ? setView('PROFILE') : setShowAuthModal(true)}
+          className="w-10 h-10 rounded-full bg-[#008751] flex items-center justify-center border-2 border-[#00ff88]"
+        >
+          {user.avatar}
+        </button>
       </div>
     </header>
   );
@@ -247,7 +252,8 @@ const Dashboard = ({ onShowLobbies }: { onShowLobbies?: () => void }) => {
                 <div className={`w-2 h-2 rounded-full mb-1 ${isConnected ? 'bg-[#00ff88] animate-pulse' : 'bg-red-500'}`} />
                 <span className="text-[8px] font-black uppercase text-white/40">{isConnected ? 'Online' : 'Offline'}</span>
               </div>
-              <button onClick={() => setView('VILLAGES')} className="glass p-4 rounded-3xl border border-white/5 hover:bg-white/10 transition-all flex flex-col items-center gap-1 min-w-[80px]">
+              {/* Villages removed for future update */}
+              {/* <button onClick={() => setView('VILLAGES')} className="glass p-4 rounded-3xl border border-white/5 hover:bg-white/10 transition-all flex flex-col items-center gap-1 min-w-[80px]"> */}
                 <Home size={20} className="text-[#00ff88]" />
                 <span className="text-[9px] font-black uppercase">Village</span>
               </button>
@@ -305,8 +311,8 @@ const Dashboard = ({ onShowLobbies }: { onShowLobbies?: () => void }) => {
             </div>
           </section>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 
@@ -1017,7 +1023,7 @@ const BottomNav = () => {
 
   return (
     <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] glass px-6 py-4 rounded-[35px] border border-white/10 flex items-center gap-2 md:gap-8 shadow-2xl">
-      {navItems.map((item) => (
+      {navItems.filter(i => i.id !== 'VILLAGES').map((item) => (
         <button
           key={item.id}
           onClick={() => setView(item.id)}
@@ -1189,7 +1195,6 @@ const AppContent = () => {
             )}
             {currentView === 'DASHBOARD' && <Dashboard onShowLobbies={() => setView('VILLAGES')} />}
             {currentView === 'PROFILE' && <ProfilePage />}
-            {currentView === 'MARKET' && <MarketPage />}
             {currentView === 'MARKET' && <MarketPage />}
             {currentView === 'SOCIAL' && <SocialHub />}
             {currentView === 'QUESTS' && (

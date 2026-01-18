@@ -45,13 +45,13 @@ export const GAMES_CONFIG = {
 
 export const CULTURAL_TITLES = [
   "New Recruit", "Street Pikin", "Senior Man", "Island Big Boy", "Compound Chief", "Naija Legend",
-  "Street Legend", "Agba Gamer", "I Too Know"
+  "Street Legend", "Agba Gamer", "I Too Know", "Compound Boss", "Street King", "Area Master"
 ];
 
 export const DAILY_QUESTS: DailyQuest[] = [
-  { id: 'q1', title: 'Street Cred', description: 'Send 5 chat messages', type: 'DAILY', target: 5, rewardXP: 200, rewardCoins: 100, progress: 0, completed: false, claimed: false },
-  { id: 'q2', title: 'Sharp Brain', description: 'Score 100 in NPAT', type: 'DAILY', target: 100, rewardXP: 500, rewardCoins: 300, progress: 0, completed: false, claimed: false },
-  { id: 'q3', title: 'Market Day', description: 'Buy any item', type: 'DAILY', target: 1, rewardXP: 200, rewardCoins: 100, progress: 0, completed: false, claimed: false }
+  { id: 'q1', title: 'Street Cred', description: 'Send 5 chat messages', type: 'DAILY', target: 5, rewardXP: 600, rewardCoins: 300, progress: 0, completed: false, claimed: false },
+  { id: 'q2', title: 'Sharp Brain', description: 'Score 100 in NPAT', type: 'DAILY', target: 100, rewardXP: 1500, rewardCoins: 900, progress: 0, completed: false, claimed: false },
+  { id: 'q3', title: 'Market Day', description: 'Buy any item', type: 'DAILY', target: 1, rewardXP: 600, rewardCoins: 300, progress: 0, completed: false, claimed: false }
 ];
 
 export const RADIO_PLAYLIST = [

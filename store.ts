@@ -69,7 +69,7 @@ const MOCK_USER: User = {
   title: CULTURAL_TITLES[0],
   level: 1,
   xp: 0,
-  coins: 500,
+  coins: 1500,
   friends: [],
   achievements: [],
   stats: {
