@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export interface AuthenticatedRequest extends Request {
@@ -14,8 +14,9 @@ export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: N
 
     const token = authHeader.split(' ')[1];
 
+    const secret = process.env.JWT_SECRET || 'secret';
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as { userId: string };
+        const decoded = jwt.verify(token, secret) as unknown as { userId: string };
         req.userId = decoded.userId;
         next();
     } catch (error) {
@@ -29,8 +30,9 @@ export const optionalAuth = (req: AuthenticatedRequest, res: Response, next: Nex
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.split(' ')[1];
+        const secret = process.env.JWT_SECRET || 'secret';
         try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as { userId: string };
+            const decoded = jwt.verify(token, secret) as unknown as { userId: string };
             req.userId = decoded.userId;
         } catch (error) {
             // Token invalid, but we continue without user
