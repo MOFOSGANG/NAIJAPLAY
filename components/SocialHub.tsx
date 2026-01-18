@@ -11,6 +11,8 @@ const SocialHub = () => {
         setActiveChat, user: currentUser
     } = useGameStore();
 
+    if (!currentUser) return null;
+
     const [tab, setTab] = useState<'FRIENDS' | 'REQUESTS' | 'FIND'>('FRIENDS');
     const [searchTerm, setSearchTerm] = useState('');
     const [msgText, setMsgText] = useState('');
@@ -83,8 +85,8 @@ const SocialHub = () => {
                         messages.map(m => (
                             <div key={m.id} className={`flex flex-col ${m.senderId === currentUser.id ? 'items-end' : 'items-start'}`}>
                                 <div className={`px-4 py-2 rounded-2xl max-w-[80%] text-sm ${m.senderId === currentUser.id
-                                        ? 'bg-[#008751] text-white rounded-tr-none'
-                                        : 'bg-white/10 text-white rounded-tl-none border border-white/5'
+                                    ? 'bg-[#008751] text-white rounded-tr-none'
+                                    : 'bg-white/10 text-white rounded-tl-none border border-white/5'
                                     }`}>
                                     {m.text}
                                 </div>

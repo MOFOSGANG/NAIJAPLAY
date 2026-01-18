@@ -69,7 +69,7 @@ const AIBanter = () => {
 };
 
 const Background = () => {
-  const activeThemeId = useGameStore((s) => s.user.activeTheme) as keyof typeof THEMES;
+  const activeThemeId = useGameStore((s) => s.user?.activeTheme) as keyof typeof THEMES;
   const theme = THEMES[activeThemeId] || THEMES.classic;
 
   const hour = new Date().getHours();

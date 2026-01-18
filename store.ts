@@ -88,6 +88,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   setLoading: (loading) => set({ isLoading: loading }),
 
   addXP: (amount) => set((state) => {
+    if (!state.user) return state;
     let newXP = state.user.xp + amount;
     let newLevel = state.user.level;
     while (newXP >= XP_PER_LEVEL) {
@@ -98,10 +99,14 @@ export const useGameStore = create<GameState>((set, get) => ({
     return { user: { ...state.user, xp: newXP, level: newLevel, title: newTitle } };
   }),
 
-  addCoins: (amount) => set((state) => ({ user: { ...state.user, coins: state.user.coins + amount } })),
+  addCoins: (amount) => set((state) => {
+    if (!state.user) return state;
+    return { user: { ...state.user, coins: state.user.coins + amount } };
+  }),
 
   updateStats: (gameId, result, score = 0) => {
     const state = get();
+    if (!state.user) return;
     const currentStats = state.user.stats[gameId];
     const newStats: GameStats = {
       wins: result === 'WIN' ? currentStats.wins + 1 : currentStats.wins,
@@ -130,6 +135,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   sendMessage: (text) => {
     const state = get();
+    if (!state.user) return;
     const newMessage: ChatMessage = {
       id: Math.random().toString(36).substr(2, 9),
       senderId: state.user.id,
@@ -162,10 +168,14 @@ export const useGameStore = create<GameState>((set, get) => ({
     }
   },
 
-  joinVillage: (id) => set((state) => ({ user: { ...state.user, villageId: id } })),
+  joinVillage: (id) => set((state) => {
+    if (!state.user) return state;
+    return { user: { ...state.user, villageId: id } };
+  }),
 
   buyItem: (itemId, price) => {
     const state = get();
+    if (!state.user) return false;
     if (state.user.coins >= price && !state.user.inventory.includes(itemId)) {
       set({
         user: { ...state.user, coins: state.user.coins - price, inventory: [...state.user.inventory, itemId] }
@@ -388,14 +398,17 @@ export const useGameStore = create<GameState>((set, get) => ({
       });
       const data = await response.json();
       if (data.claimed) {
-        set((state) => ({
-          user: {
-            ...state.user,
-            coins: state.user.coins + data.rewardCoins,
-            xp: state.user.xp + data.rewardXP,
-            loginStreak: data.newStreak
-          }
-        }));
+        set((state) => {
+          if (!state.user) return state;
+          return {
+            user: {
+              ...state.user,
+              coins: state.user.coins + data.rewardCoins,
+              xp: state.user.xp + data.rewardXP,
+              loginStreak: data.newStreak
+            }
+          };
+        });
       }
       return data;
     } catch (e) {

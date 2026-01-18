@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas';
 
 export const CertificateGenerator = ({ type = 'RANK' }: { type?: 'RANK' | 'WIN' }) => {
     const { user } = useGameStore();
+    if (!user) return null;
     const certRef = useRef<HTMLDivElement>(null);
     const [generating, setGenerating] = useState(false);
     const [completed, setCompleted] = useState(false);
