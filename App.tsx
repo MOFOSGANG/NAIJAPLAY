@@ -1105,7 +1105,8 @@ const AppContent = () => {
     if (!isLoggedIn && currentView !== 'LANDING') {
       setView('LANDING');
     }
-  }, [isLoggedIn, currentView, setView]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn]); // Only re-run when login status changes, not on every view change
 
   // Update Source when track changes
   useEffect(() => {
