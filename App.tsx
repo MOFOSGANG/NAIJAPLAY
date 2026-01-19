@@ -1096,9 +1096,12 @@ const AppContent = () => {
 
   useEffect(() => {
     if (user && user.id) {
+      // Use getState to avoid stale closure issues without adding connect to deps
+      const { connect } = useMultiplayerStore.getState();
       connect(user.id);
     }
-  }, [user?.id, connect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]); // Only re-run when user.id changes, not when connect reference changes
 
   // Force Landing if not logged in and trying to access protected views
   useEffect(() => {
@@ -1145,7 +1148,8 @@ const AppContent = () => {
     return () => {
       socket.off('achievements_unlocked');
     };
-  }, [user?.id, addToast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]); // addToast is stable from context, no need to include
 
   const [dailyRewardData, setDailyRewardData] = useState<any>(null);
 
