@@ -47,11 +47,18 @@ const redisClient = createClient({
     url: redisUrl || 'redis://localhost:6379'
 });
 
-app.use(helmet());
+// CORS MUST come before helmet to handle preflight requests properly
 app.use(cors({
     origin: process.env.CORS_ORIGIN || '*',
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
+}));
+
+// Helmet after CORS, with relaxed settings for API access
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
 }));
 
 const limiter = rateLimit({
