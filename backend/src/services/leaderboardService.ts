@@ -1,4 +1,4 @@
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 
 export const getGlobalUserLeaderboard = async (limit = 50) => {
     return await prisma.user.findMany({
@@ -61,3 +61,4 @@ export const getRegionalVillageLeaderboard = async (region: string, limit = 20) 
         }
     });
 };
+

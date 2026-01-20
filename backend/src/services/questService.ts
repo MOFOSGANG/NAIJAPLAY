@@ -1,4 +1,4 @@
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 
 interface QuestTemplate {
     title: string;
@@ -114,3 +114,4 @@ export const claimQuestReward = async (userId: string, questId: string) => {
 
     return quest;
 };
+

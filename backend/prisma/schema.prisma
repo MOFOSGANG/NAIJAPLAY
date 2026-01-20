@@ -32,6 +32,7 @@ model User {
   lastLoginAt   DateTime  @default(now())
   loginStreak   Int       @default(1)
   achievements  Json      @default("{}")
+  stats         Json      @default("{}")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   

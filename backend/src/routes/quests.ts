@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 import { authMiddleware } from '../middleware/auth.js';
 import type { AuthenticatedRequest } from '../middleware/auth.js';
 import { refreshDailyQuests, claimQuestReward } from '../services/questService.js';

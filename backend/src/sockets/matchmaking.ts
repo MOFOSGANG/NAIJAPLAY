@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
+import { RoomManager } from '../services/roomManager.js';
 
 interface QueuePlayer {
     socketId: string;
@@ -20,7 +21,14 @@ GAME_TYPES.forEach(gt => {
     queues[gt] = {};
 });
 
-export const setupMatchmaking = (io: Server) => {
+// Room Manager (initialized with Redis client in setupMatchmaking)
+let roomManager: RoomManager;
+const socketToRoom: Map<string, string> = new Map();
+
+export const setupMatchmaking = (io: Server, redisClient: any = null) => {
+    // Initialize Room Manager with Redis if available
+    roomManager = new RoomManager(redisClient);
+
     io.on('connection', (socket: Socket) => {
         // userId from auth middleware (to be implemented)
         const userId = socket.handshake.auth?.userId;
@@ -59,6 +67,75 @@ export const setupMatchmaking = (io: Server) => {
 
         socket.on('disconnect', () => {
             removePlayerFromAllQueues(socket.id);
+            handleLeaveRoom(io, socket);
+        });
+
+        // Periodic stats update
+        const statsInterval = setInterval(async () => {
+            const onlineCount = io.engine.clientsCount;
+            const rooms = await roomManager.getAllRooms();
+            const gamesCount = rooms.length;
+            socket.emit('online_stats', { players: onlineCount, games: gamesCount });
+        }, 5000);
+
+        socket.on('disconnect', () => clearInterval(statsInterval));
+
+        // --- Room Management ---
+
+        socket.on('get_rooms', async () => {
+            const rooms = await roomManager.getAllRooms();
+            socket.emit('rooms_list', rooms);
+        });
+
+        socket.on('create_room', async (data: { name: string; gameType: string; isPrivate: boolean; stake?: number }) => {
+            const roomId = `room_${uuidv4().substring(0, 8)}`;
+            const room = {
+                id: roomId,
+                name: data.name || "Street Battle",
+                gameType: data.gameType || "NPAT",
+                status: 'WAITING' as const,
+                playerCount: 1,
+                maxPlayers: 4,
+                isPrivate: !!data.isPrivate,
+                stake: data.stake || 0,
+                hostName: (socket as any).username || "Street King",
+                hostAvatar: "👤",
+                createdAt: new Date().toISOString(),
+                players: [socket.id]
+            };
+
+            await roomManager.createRoom(room);
+            socket.join(roomId);
+            socketToRoom.set(socket.id, roomId);
+
+            socket.emit('room_created', room);
+            const allRooms = await roomManager.getAllRooms();
+            io.emit('rooms_list', allRooms);
+
+            console.log(`Room created: ${roomId} by ${socket.id}`);
+        });
+
+        socket.on('join_room', async (roomId: string) => {
+            const room = await roomManager.getRoom(roomId);
+            if (!room) return socket.emit('error', { message: "Room no dey!" });
+            if (room.playerCount >= room.maxPlayers) return socket.emit('error', { message: "Room full!" });
+
+            socket.join(roomId);
+            socketToRoom.set(socket.id, roomId);
+            await roomManager.addPlayer(roomId, socket.id);
+
+            const updatedRoom = await roomManager.getRoom(roomId);
+            socket.emit('join_success', updatedRoom); // Explicit success for joining player
+            io.to(roomId).emit('room_updated', updatedRoom);
+
+            const allRooms = await roomManager.getAllRooms();
+            io.emit('rooms_list', allRooms);
+
+            console.log(`Player ${socket.id} joined room ${roomId}`);
+        });
+
+        socket.on('leave_room', () => {
+            handleLeaveRoom(io, socket);
         });
     });
 };
@@ -112,5 +189,28 @@ const removePlayerFromAllQueues = (socketId: string) => {
                 subQueues[stake as any] = q.filter((p: QueuePlayer) => p.socketId !== socketId);
             }
         }
+    }
+};
+
+const handleLeaveRoom = async (io: Server, socket: Socket) => {
+    const roomId = socketToRoom.get(socket.id);
+    if (!roomId) return;
+
+    const room = await roomManager.getRoom(roomId);
+    if (room) {
+        socket.leave(roomId);
+        socketToRoom.delete(socket.id);
+
+        await roomManager.removePlayer(roomId, socket.id);
+
+        const updatedRoom = await roomManager.getRoom(roomId);
+        if (!updatedRoom) {
+            console.log(`Room ${roomId} deleted (empty)`);
+        } else {
+            io.to(roomId).emit('room_updated', updatedRoom);
+        }
+
+        const allRooms = await roomManager.getAllRooms();
+        io.emit('rooms_list', allRooms);
     }
 };

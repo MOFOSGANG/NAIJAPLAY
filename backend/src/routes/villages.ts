@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { prisma, redisClient } from '../server.js';
+import { prisma, redisClient } from '../db.js';
 
 const router = Router();
 

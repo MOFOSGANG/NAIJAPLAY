@@ -1,4 +1,4 @@
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 
 export const checkDailyReward = async (userId: string) => {
     const p = prisma as any;
@@ -51,3 +51,4 @@ export const checkDailyReward = async (userId: string) => {
         message: `Oshey! Day ${newStreak} login. You get ${rewardCoins} coins and ${rewardXP} XP! 🥖🔥`
     };
 };
+

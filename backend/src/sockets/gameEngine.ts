@@ -44,6 +44,12 @@ export const setupGameEngine = (io: Server) => {
             const { roomId, stake = 0 } = data;
             if (!roomId) return;
 
+            // Prevent multiple start triggers
+            if (gameRooms[roomId] && gameRooms[roomId].isActive) {
+                console.log(`Game already active in room: ${roomId}. Skipping restart. ⚠️`);
+                return;
+            }
+
             console.log(`Starting game in room: ${roomId} with ${stake}C stake. 🚀`);
 
             const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

@@ -1,4 +1,4 @@
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 
 export const sendFriendRequest = async (userId: string, targetUsername: string) => {
     const p = prisma as any;
@@ -101,3 +101,4 @@ export const getMessages = async (userId: string, friendId: string) => {
         take: 50
     });
 };
+

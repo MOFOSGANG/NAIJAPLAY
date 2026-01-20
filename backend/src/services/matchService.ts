@@ -1,4 +1,4 @@
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 
 export const processMatchStart = async (playerIds: string[], stake: number) => {
     const p = prisma as any;
@@ -60,3 +60,4 @@ export const saveMatchHistory = async (data: {
         }
     });
 };
+

@@ -3,16 +3,16 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
-import { createClient } from 'redis';
-import pg from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { setupGameEngine } from './sockets/gameEngine.js';
 import { setupMatchmaking } from './sockets/matchmaking.js';
 import { translateToPidgin } from './services/aiService.js';
 import bcrypt from 'bcryptjs';
+import { socketAuthMiddleware } from './middleware/socketAuth.js';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+import { prisma, redisClient } from './db.js';
+import { sanitizeBody, sanitizeQuery } from './utils/sanitizer.js';
 
 import { validateEnv } from './utils/envValidator.js';
 import path from 'path';
@@ -38,14 +38,7 @@ const io = new Server(server, {
     cors: { origin: '*', methods: ['GET', 'POST'] }
 });
 
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
-const redisUrl = process.env.REDIS_URL;
-if (!redisUrl) console.warn("⚠️ REDIS_URL no dey! Real-time features fit burst.");
-const redisClient = createClient({
-    url: redisUrl || 'redis://localhost:6379'
-});
+// Database clients imported from ./db.js
 
 // CORS MUST come before helmet to handle preflight requests properly
 app.use(cors({
@@ -72,23 +65,27 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 app.use(express.json());
 
+// Global input sanitization (body only - query is read-only in newer Node)
+app.use(sanitizeBody);
+// app.use(sanitizeQuery); // Disabled: req.query is read-only in Node 24+
+
 // --- NIGERIAN LOGS ---
 console.log("Setting up the Compound... 🏗️");
 
 // --- MIDDLEWARE ---
 // TODO: JWT Auth Middleware
 
+// --- API ROUTES ---
+// Temporarily disabled - fix import issues:
+// app.use('/api/v1/auth', authRoutes);
+// app.use('/api', healthRoutes);
+
 // --- SOCKET LOGIC ---
-io.use((socket, next) => {
-    const userId = socket.handshake.auth?.userId;
-    if (userId) {
-        (socket as any).userId = userId;
-    }
-    next();
-});
+// Use dedicated JWT authentication middleware
+io.use(socketAuthMiddleware);
 
 setupGameEngine(io);
-setupMatchmaking(io);
+setupMatchmaking(io, redisClient);
 
 io.on('connection', (socket) => {
     const userId = (socket as any).userId;
@@ -190,30 +187,38 @@ if (process.env.NODE_ENV === 'production') {
 // GET /api/user/profile
 // POST /api/market/buy (Atomic transaction)
 
+// 404 handler - must be after all routes
+app.use(notFoundHandler);
+
+// Error handler - must be last middleware
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
     try {
-        const listen = (port: number | string) => {
-            const s = server.listen(port)
-                .on('error', (err: any) => {
-                    if (err.code === 'EADDRINUSE') {
-                        console.log(`⚠️ Port ${port} occupied. Trying ${Number(port) + 1}...`);
-                        listen(Number(port) + 1);
-                    } else {
-                        console.error("Server error:", err);
-                    }
-                })
-                .on('listening', () => {
-                    console.log(`========================================`);
-                    console.log(`🔥 NAIJA PLAY SERVER READY!`);
-                    console.log(`Compound dey live for port: ${port}`);
-                    console.log(`========================================`);
-                });
-        };
-
         // --- 1. Bind Port Immediately (Crucial for Render Health Check) ---
-        listen(PORT);
+        let currentPort = Number(PORT);
+
+        server.on('error', (err: any) => {
+            if (err.code === 'EADDRINUSE') {
+                console.log(`⚠️ Port ${currentPort} occupied. Trying ${currentPort + 1}...`);
+                currentPort++;
+                server.listen(currentPort);
+            } else {
+                console.error("Server error:", err);
+                process.exit(1);
+            }
+        });
+
+        server.on('listening', () => {
+            console.log(`========================================`);
+            console.log(`🔥 NAIJA PLAY SERVER READY!`);
+            console.log(`Compound dey live for port: ${currentPort}`);
+            console.log(`========================================`);
+        });
+
+        server.listen(currentPort);
 
         // --- 2. Background Connections (Non-blocking) ---
         redisClient.connect()

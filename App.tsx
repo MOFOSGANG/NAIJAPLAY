@@ -173,9 +173,16 @@ const Header = ({ isLoggedIn, setShowAuthModal }: { isLoggedIn: boolean; setShow
             </div>
             <button
               onClick={() => setView('PROFILE')}
-              className="w-10 h-10 rounded-full bg-[#008751] flex items-center justify-center border-2 border-[#00ff88]"
+              className="w-10 h-10 rounded-full bg-[#008751] flex items-center justify-center border-2 border-[#00ff88] transition-all hover:scale-105 active:scale-95"
             >
               {user.avatar}
+            </button>
+            <button
+              onClick={() => useGameStore.getState().logout()}
+              className="p-2.5 rounded-xl bg-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/20 transition-all"
+              title="Logout from Street"
+            >
+              <LogOut size={16} />
             </button>
           </>
         ) : (
@@ -598,7 +605,7 @@ const ProfilePage = () => {
           <Trophy className="text-[#FFA500]" size={20} /> BADGES OF THE STREET
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {user.achievements.map((achievement: any) => (
+          {(user.achievements || []).map((achievement: any) => (
             <div key={achievement.id} className="glass p-6 rounded-[35px] border border-white/10 flex flex-col items-center gap-3 relative group">
               <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
                 {achievement.icon || '🏅'}
@@ -822,8 +829,13 @@ const GamePlay = () => {
     setTimeout(() => {
       setGameState('RESULT');
       updateStats(activeGameId as GameType, validCount >= 2 ? 'WIN' : 'LOSS', totalScore);
-      addXP(xpEarned);
-      addCoins(coinsEarned);
+
+      // Only add rewards locally for Single Player matches
+      // Multiplayer rewards are pushed from server to avoid double rewards
+      if (!currentRoom) {
+        addXP(xpEarned);
+        addCoins(coinsEarned);
+      }
 
       if (validCount === 4) {
         triggerAIBanter('OSHEY! Perfect round! You too sharp! 🔥');
@@ -1086,7 +1098,7 @@ const AppContent = () => {
     currentView, isLoading, setView, user, updateProfile,
     completeOnboarding, settings, updateSettings, checkAuth, logout
   } = useGameStore();
-  const { connect, isConnected, queue, leaveQueue, currentRoom, leaveRoom, joinRoom } = useMultiplayerStore();
+  const { connect, disconnect, isConnected, queue, leaveQueue, currentRoom, leaveRoom, joinRoom } = useMultiplayerStore();
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [spectatingRoomId, setSpectatingRoomId] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -1116,6 +1128,16 @@ const AppContent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn]); // Only re-run when login status changes, not on every view change
 
+  // Auto-navigate to game if in a room
+  useEffect(() => {
+    if (currentRoom && currentView !== 'GAME_PLAY') {
+      setView('GAME_PLAY');
+      if (currentRoom.status === 'WAITING') {
+        addToast(`Match Found! Oya, start! 🎮`, 'success');
+      }
+    }
+  }, [currentRoom?.id, currentView]); // Only trigger on room ID change or view change
+
   // Update Source when track changes
   useEffect(() => {
     if (audioRef.current) {
@@ -1141,8 +1163,15 @@ const AppContent = () => {
   }, [settings.music]);
 
   useEffect(() => {
-    if (!user) return;
-    const socket = connectSocket(user.id);
+    if (!user) {
+      disconnect(); // From useMultiplayerStore
+      return;
+    }
+
+    // Use multiplayerStore.connect to ensure state is synced
+    connect(user.id);
+
+    const socket = connectSocket(user.id); // Still needed for this specific listener block or shared instance
     socket.on('achievements_unlocked', (newUnlocks: any[]) => {
       newUnlocks.forEach(ach => {
         addToast(`${ach.title} Unlocked! 🏆`, 'success');
@@ -1154,7 +1183,7 @@ const AppContent = () => {
       socket.off('achievements_unlocked');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]); // addToast is stable from context, no need to include
+  }, [user?.id]);
 
   const [dailyRewardData, setDailyRewardData] = useState<any>(null);
 

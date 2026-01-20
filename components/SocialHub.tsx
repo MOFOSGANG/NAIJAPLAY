@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, UserPlus, MessageCircle, Search, Check, X, Send, ArrowLeft } from 'lucide-react';
+import { Users, UserPlus, MessageCircle, Search, Check, X, Send, ArrowLeft, Trophy } from 'lucide-react';
 import { useGameStore } from '../store';
 import { User, FriendRequest } from '../types';
+import { useMultiplayerStore } from '../multiplayerStore';
+import { useDebounce } from '../hooks/useCustomHooks';
 
 const SocialHub = () => {
     const {
@@ -13,6 +15,7 @@ const SocialHub = () => {
 
     const [tab, setTab] = useState<'FRIENDS' | 'REQUESTS' | 'FIND'>('FRIENDS');
     const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearchTerm = useDebounce(searchTerm, 300); // Debounce search for performance
     const [msgText, setMsgText] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -163,8 +166,18 @@ const SocialHub = () => {
                                                 <p className="text-[10px] text-white/40 uppercase tracking-widest">{friend.title}</p>
                                             </div>
                                         </div>
-                                        <div className="p-2 bg-white/5 rounded-full text-white/40 group-hover:text-[#00ff88] group-hover:bg-[#00ff88]/10 transition-all">
-                                            <MessageCircle size={20} />
+                                        <div className="flex gap-2 items-center">
+                                            <div onClick={(e) => {
+                                                e.stopPropagation();
+                                                const { createRoom } = useMultiplayerStore.getState();
+                                                createRoom(`${currentUser.username} vs ${friend.username}`, 'NPAT', true);
+                                            }} className="p-3 bg-[#008751]/10 text-[#00ff88] rounded-xl hover:bg-[#008751] hover:text-white transition-all group/btn flex items-center gap-2">
+                                                <Trophy size={16} />
+                                                <span className="text-[10px] font-black uppercase hidden group-hover:block">Battle</span>
+                                            </div>
+                                            <div className="p-2 bg-white/5 rounded-full text-white/40 group-hover:text-[#00ff88] group-hover:bg-[#00ff88]/10 transition-all">
+                                                <MessageCircle size={20} />
+                                            </div>
                                         </div>
                                     </div>
                                 ))

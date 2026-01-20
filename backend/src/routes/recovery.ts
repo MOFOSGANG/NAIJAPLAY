@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 import { z } from 'zod';
 import crypto from 'crypto';
 

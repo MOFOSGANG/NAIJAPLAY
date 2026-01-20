@@ -1,4 +1,4 @@
-import { prisma } from '../server.js';
+import { prisma } from '../db.js';
 
 interface Achievement {
     id: string;
@@ -97,3 +97,4 @@ export const updateAchievements = async (userId: string) => {
 
     return newUnlocks;
 };
+

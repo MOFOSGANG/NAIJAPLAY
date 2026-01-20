@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Socket } from 'socket.io-client';
 import { connectSocket, disconnectSocket, getSocket } from './socketService';
 import { GameType } from './types';
+import { useGameStore } from './store';
 
 export interface GameRoom {
     id: string;
@@ -174,6 +175,35 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
                     availableRooms: state.availableRooms.map(r => r.id === room.id ? room : r),
                     currentRoom: state.currentRoom?.id === room.id ? room : state.currentRoom
                 }));
+            });
+
+            socket.on('room_created', (room: GameRoom) => {
+                set({ currentRoom: room });
+            });
+
+            socket.on('join_success', (room: GameRoom) => {
+                set({ currentRoom: room });
+            });
+
+            socket.on('error', (data: { message: string }) => {
+                console.error('🔴 Street Error:', data.message);
+                // Optionally add a toast here if you have access to store
+            });
+
+            socket.on('payout_received', (data: { amount: number; xp?: number }) => {
+                console.log(`💰 Street Payout Received: ${data.amount}C`);
+                const { addCoins, addXP } = useGameStore.getState();
+                addCoins(data.amount);
+                if (data.xp) addXP(data.xp);
+            });
+
+            socket.on('game_over', (data: any) => {
+                set((state) => {
+                    if (state.currentRoom) {
+                        return { currentRoom: { ...state.currentRoom, status: 'FINISHED' } };
+                    }
+                    return state;
+                });
             });
 
         } catch (error: any) {
